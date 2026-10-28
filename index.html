@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ED1B2E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Hiểu điều ứng viên băn khoăn</title>
+<style>
+:root{
+  --red:#ED1B2E;--red-d:#B5121F;--red-l:#FDE8EA;
+  --ink:#1D1D1F;--ink2:#3A3B40;--gray:#6E6E73;--line:#E5E5EA;--bg:#F5F5F7;
+  --ok:#1E9E5A;--ok-l:#E4F5EC;--mid:#E58A00;--mid-l:#FFF1DC;--no:#C8102E;--no-l:#FDE8EA;
+  --sh1:0 1px 2px rgba(0,0,0,.04),0 6px 18px rgba(0,0,0,.06);
+  --sh2:0 4px 10px rgba(0,0,0,.06),0 24px 48px rgba(0,0,0,.12);
+  --sb:env(safe-area-inset-bottom,0px);--st:env(safe-area-inset-top,0px);
+  --g:#ED1B2E;--gd:#B5121F;--gl:#FDE8EA;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Arial,sans-serif;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;min-height:100dvh;overflow-x:hidden;transition:background .4s}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+button:focus-visible,.input:focus-visible{outline:3px solid #0A66C2;outline-offset:3px}
+img{-webkit-user-drag:none}
+html,body{overscroll-behavior-y:none;overflow-x:hidden}
+main{overflow-x:hidden;overflow-x:clip}
+.fcard,.bcard{-webkit-user-select:none;user-select:none}
+.preview img{-webkit-user-select:auto;user-select:auto;-webkit-touch-callout:default}
+.scr{-webkit-user-select:text;user-select:text}
+.bar{position:sticky;top:0;z-index:50;padding:calc(10px + var(--st)) 16px 10px;background:rgba(245,245,247,.86);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px)}
+body.redmode .bar{display:none}
+.bar-in{max-width:620px;margin:0 auto;display:flex;align-items:center;gap:10px;min-height:40px}
+.ib{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#fff;box-shadow:var(--sh1);flex:none}
+.ib svg{width:18px;height:18px}
+.bar-t{flex:1;min-width:0;text-align:center}
+.bar-t b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-t small{display:block;font-size:12px;color:var(--gray);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dots{display:flex;gap:5px;justify-content:center;margin-top:5px}
+.dots i{width:6px;height:6px;border-radius:3px;background:#D1D1D6;transition:all .3s}
+.dots i.on{width:18px;background:var(--red)}
+.dots i.done{background:#F4A3AB}
+.spacer{width:40px;flex:none}
+main{max-width:620px;margin:0 auto;padding:14px max(16px,env(safe-area-inset-left)) calc(160px + var(--sb)) max(16px,env(safe-area-inset-right))}
+.view{animation:vin .45s cubic-bezier(.2,.8,.2,1)}
+.view.back{animation:vback .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes vin{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+@keyframes vback{from{opacity:0;transform:translateX(-26px)}to{opacity:1;transform:none}}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--red)}
+h2{font-size:clamp(24px,6.2vw,32px);line-height:1.15;letter-spacing:-.02em;margin:4px 0 6px}
+.lead{color:var(--gray);margin:0 0 18px;font-size:16px}
+.q-head{margin:6px 2px 18px}
+.btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:54px;padding:0 22px;border-radius:999px;font-weight:700;font-size:16.5px;transition:transform .15s;user-select:none;-webkit-user-select:none}
+.btn:active{transform:scale(.96)}
+.btn svg{width:19px;height:19px}
+.b-pri{background:var(--red);color:#fff;box-shadow:0 10px 24px rgba(237,27,46,.28)}
+.b-dark{background:linear-gradient(160deg,#C8102E,#9E0A16);color:#fff;box-shadow:0 10px 24px rgba(158,10,22,.28)}
+.b-ghost{background:#fff;color:var(--ink);box-shadow:var(--sh1)}
+.full{width:100%}
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:60;padding:12px 16px calc(14px + var(--sb));background:linear-gradient(rgba(245,245,247,0),rgba(245,245,247,.95) 30%);animation:dock .4s cubic-bezier(.2,.8,.2,1)}
+@keyframes dock{from{transform:translateY(100%)}to{transform:none}}
+.dock-in{max-width:620px;margin:0 auto;display:grid;gap:10px}
+.dock-in.two{grid-template-columns:1fr 1fr}
+.ripple{position:absolute;border-radius:50%;transform:scale(0);animation:rip .55s ease-out;background:rgba(255,255,255,.45);pointer-events:none}
+.b-ghost .ripple,.opt .ripple,.mode-w .ripple{background:rgba(0,0,0,.08)}
+@keyframes rip{to{transform:scale(4);opacity:0}}
+/* ===== HOME (full red) ===== */
+body.redmode{background:#D7101F}
+.home{position:relative;min-height:calc(100dvh - 40px);display:flex;flex-direction:column;padding-top:calc(14px + var(--st));color:#fff}
+.home-bg{position:fixed;inset:0;z-index:-1;background:radial-gradient(120% 70% at 85% -10%,#FF4A57 0%,rgba(255,74,87,0) 60%),radial-gradient(90% 60% at -10% 110%,#9E0A16 0%,rgba(158,10,22,0) 60%),linear-gradient(165deg,#ED1B2E 0%,#C8102E 100%);overflow:hidden}
+.home-bg i{position:absolute;border-radius:50%;border:2px solid rgba(255,255,255,.12)}
+.home-bg i:nth-child(1){width:520px;height:520px;right:-260px;top:-200px}
+.home-bg i:nth-child(2){width:360px;height:360px;right:-180px;top:-120px;background:rgba(255,255,255,.04)}
+.home-bg i:nth-child(3){width:300px;height:300px;left:-170px;bottom:-110px}
+.logo-wrap{display:flex;justify-content:center;margin-top:6px}
+.logo{width:clamp(150px,44vw,196px);aspect-ratio:1;border-radius:44px;overflow:hidden;box-shadow:0 0 0 6px rgba(255,255,255,.95),0 0 0 14px rgba(255,255,255,.16),0 28px 60px rgba(90,0,8,.45);animation:logoIn .9s cubic-bezier(.2,1.3,.4,1) both, floaty 5s ease-in-out 1s infinite}
+.logo img{display:block;width:100%;height:100%;object-fit:cover}
+@keyframes logoIn{from{transform:scale(.4) rotate(-10deg);opacity:0}to{transform:none;opacity:1}}
+@keyframes floaty{50%{transform:translateY(-6px)}}
+.gtitle{text-align:center;margin:26px 0 22px;animation:vin .6s .15s both}
+.gtitle .tag{display:inline-block;background:#fff;color:var(--red);font-size:11.5px;font-weight:800;letter-spacing:.2em;padding:6px 14px;border-radius:999px}
+.gtitle h1{font-size:clamp(32px,9vw,48px);line-height:1.06;letter-spacing:-.025em;margin:12px 0 0;font-weight:800;text-shadow:0 4px 18px rgba(90,0,8,.25)}
+.steps-h{display:grid;grid-template-columns:repeat(4,1fr);max-width:400px;margin:0 auto;padding:10px 6px;border-radius:20px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);animation:vin .6s .25s both;position:relative}
+.steps-h .s{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#fff;text-align:center;line-height:1.15}
+.steps-h .s .ic{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--red);font-size:0;position:relative;z-index:1}
+.steps-h .s .ic svg{width:16px;height:16px}
+.steps-h .s:not(:last-child):after{content:"";position:absolute;top:15px;left:calc(50% + 19px);right:calc(-50% + 19px);height:2px;background:rgba(255,255,255,.45);border-radius:2px}
+.steps-h .ar{display:none}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:26px;animation:vin .6s .35s both}
+.mode-w{container-type:inline-size;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:flex-start;gap:14px;text-align:left;border-radius:26px;padding:16px 14px 16px;min-height:168px;transition:transform .18s}
+.mode-w:active{transform:scale(.97)}
+.mode-w .mi{width:clamp(52px,14vw,64px);height:clamp(52px,14vw,64px);border-radius:18px;display:grid;place-items:center}
+.mode-w .mi svg{width:32px;height:32px}
+.mode-w b{font-size:clamp(22px,6.2vw,30px);font-size:clamp(24px,15cqw,34px);line-height:1.12;letter-spacing:-.02em;margin-top:auto;font-weight:800}
+.mode-w .ar2{position:absolute;right:14px;top:14px;width:38px;height:38px;border-radius:50%;display:grid;place-items:center}
+.m1{background:#fff;color:var(--ink);box-shadow:0 14px 30px rgba(90,0,8,.25)}
+.m1 .mi{background:var(--red-l);color:var(--red)}.m1 .ar2{background:var(--red);color:#fff}
+.m2{background:#FFE3E6;color:#7A0B15;box-shadow:0 14px 30px rgba(90,0,8,.25)}
+.m2 .mi{background:#fff;color:var(--red)}.m2 .ar2{background:#B5121F;color:#fff}
+
+/* option lists */
+.opts{display:grid;gap:12px}
+.opt{position:relative;overflow:hidden;display:flex;align-items:center;gap:16px;text-align:left;background:#fff;border-radius:24px;padding:18px;box-shadow:var(--sh1);transition:transform .18s,box-shadow .2s}
+.opt:active{transform:scale(.975)}
+@media (hover:hover) and (pointer:fine){.opt:hover,.mode-w:hover{box-shadow:var(--sh2);transform:translateY(-2px)}}
+.opt .oi{width:56px;height:56px;border-radius:18px;display:grid;place-items:center;flex:none;background:var(--gl);color:var(--g);font-weight:800;font-size:22px}
+.opt .oi svg{width:28px;height:28px}
+.opt .ot{flex:1;min-width:0}
+.opt .ot b{display:block;font-size:17.5px;line-height:1.3}
+.opt .ot span{display:block;font-size:14px;color:var(--gray);line-height:1.4;margin-top:2px}
+.opt .chev{color:#C7C7CC;flex:none}
+.opt.sel{box-shadow:inset 0 0 0 2.5px var(--g),var(--sh1)}
+.role-opt{flex-direction:column;align-items:flex-start;padding:22px;gap:12px}
+.role-opt .oi{width:64px;height:64px;border-radius:20px}
+.role-opt .ot b{font-size:22px}
+.role-opt.r-ql{--g:#1F3A68;--gl:#E6ECF5}
+.role-opt.r-uv{--g:#ED1B2E;--gl:#FDE8EA}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;background:#F1F1F4;color:var(--ink2)}
+.tagline{display:flex;gap:6px;flex-wrap:wrap}
+.time-opt{justify-content:space-between}
+.opt .ot .big,.big{font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--ink)}
+.opt .ot .big small,.big small{font-size:16px;font-weight:700;color:var(--gray);margin-left:4px;letter-spacing:0}
+.grp-opt{padding:0;overflow:hidden;align-items:stretch}
+.grp-opt .gside{width:92px;flex:none;background:linear-gradient(160deg,var(--g),var(--gd));color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:16px 0}
+.grp-opt .gside i{font-style:normal;font-size:11px;font-weight:800;letter-spacing:.12em;opacity:.85}
+.grp-opt .gside b{font-size:38px;line-height:1;font-weight:800}
+.grp-opt .gside svg{width:34px;height:34px}
+.grp-opt .ot{padding:16px 0;align-self:center}
+.grp-opt .side-r{display:flex;align-items:center;gap:6px;padding-right:14px}
+.cnt-due{font-size:12px;font-weight:800;padding:4px 9px;border-radius:999px;background:var(--red-l);color:var(--red-d);white-space:nowrap}
+.card-opt{padding:14px 16px;gap:14px;border-radius:20px}
+.card-opt .num{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-weight:800;color:#fff;background:var(--g);flex:none;font-size:16px}
+.card-opt .ot b{font-size:16px;font-weight:600}
+.done-note{display:flex;gap:10px;align-items:center;background:#fff;border-radius:18px;padding:12px 14px;box-shadow:var(--sh1);margin-bottom:14px;font-size:14px;color:var(--ink2)}
+.done-note .gdots{display:flex;gap:6px}
+.done-note .gdots i{width:26px;height:26px;border-radius:9px;display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:800;color:#fff;opacity:.25}
+.done-note .gdots i.on{opacity:1}
+/* flashcard front */
+.fcard{position:relative;overflow:hidden;border-radius:30px;padding:20px 20px 22px;color:#fff;background:linear-gradient(160deg,var(--g) 0%,var(--gd) 100%);box-shadow:0 22px 48px rgba(0,0,0,.18);min-height:min(64vh,540px);display:flex;flex-direction:column}
+.fcard .deco1{position:absolute;right:-70px;top:-70px;width:240px;height:240px;border-radius:50%;border:2px solid rgba(255,255,255,.16)}
+.fcard .deco2{position:absolute;left:-60px;bottom:-60px;width:180px;height:180px;border-radius:50%;border:2px solid rgba(255,255,255,.1)}
+.fcard .grid{position:absolute;right:28px;top:190px;width:70px;height:46px;background-image:radial-gradient(rgba(255,255,255,.35) 1.4px,transparent 1.6px);background-size:12px 12px;opacity:.7}
+.fcard > *{position:relative;z-index:1}
+.fc-brand{text-align:center;background:#fff;color:var(--g);font-size:11.5px;font-weight:800;letter-spacing:.16em;padding:8px 10px;border-radius:999px}
+.fc-grp{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:13px}
+.fc-grp b{background:#fff;color:var(--g);font-size:11px;letter-spacing:.06em;padding:3px 9px;border-radius:999px}
+.fc-mid{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
+.fc-mid .lab{font-size:12px;font-weight:800;letter-spacing:.2em;opacity:.9}
+.fc-mid .num{font-size:72px;font-weight:800;line-height:.95;letter-spacing:-.03em}
+.fc-ic{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.16);box-shadow:0 0 0 12px rgba(255,255,255,.07)}
+.fc-ic > span{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;border:2.5px solid rgba(255,255,255,.85)}
+.fc-ask{display:flex;align-items:center;gap:8px;margin-top:16px;font-size:14px;font-style:italic;font-weight:600}
+.fc-ask i{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:800;background:rgba(255,255,255,.22)}
+.fc-quote{margin-top:12px;flex:1;display:flex;align-items:center;border-radius:22px;padding:22px 20px 22px 26px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);position:relative}
+.fc-quote:before{content:"";position:absolute;left:14px;top:20px;bottom:20px;width:4px;border-radius:3px;background:#fff}
+.fc-quote p{margin:0;font-size:clamp(23px,6vw,30px);font-weight:800;line-height:1.28;letter-spacing:-.01em}
+.fc-foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:12px;font-weight:800;letter-spacing:.18em}
+.fc-foot span:last-child{letter-spacing:0;font-weight:600;opacity:.85;display:flex;gap:6px;align-items:center}
+/* back */
+.bcard{border-radius:30px;padding:10px;background:linear-gradient(160deg,var(--g),var(--gd));box-shadow:0 22px 48px rgba(0,0,0,.16)}
+.bcard-in{background:#fff;border-radius:22px;padding:18px 16px 16px}
+.bc-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.bc-tag{background:var(--g);color:#fff;font-size:12px;font-weight:800;letter-spacing:.08em;padding:5px 12px;border-radius:999px}
+.bc-q{margin:8px 0 6px;font-style:italic;color:var(--gray);font-size:15px}
+.st{position:relative;display:grid;grid-template-columns:30px 1fr;gap:12px;padding:12px 0}
+.st:not(:last-child):after{content:"";position:absolute;left:14px;top:42px;bottom:-12px;width:2px;background:var(--gl)}
+.st .n{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--g);color:#fff;font-weight:800;font-size:14px;position:relative;z-index:1}
+.st h4{margin:3px 0 2px;font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--g)}
+.st .hint{font-size:13.5px;color:var(--gray);margin:0 0 6px;line-height:1.4}
+.st .scr{font-size:16px;line-height:1.55}
+.st .ctx{display:inline-block;font-size:12px;font-weight:700;color:var(--gray);background:#F1F1F4;border-radius:999px;padding:2px 9px;margin-bottom:4px}
+.ph{background:#FFF0C2;color:#7A4B00;border-radius:6px;padding:0 5px;font-weight:600}
+.wait{display:block;margin-top:4px;font-size:13px;color:var(--gray);font-style:italic}
+.bc-foot{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:12px;border-top:1px dashed var(--line);font-size:11.5px;font-weight:800;letter-spacing:.14em}
+.bc-foot span:first-child{color:var(--red)}
+.bc-foot span:last-child{color:var(--g);letter-spacing:.06em}
+.more{margin-top:12px;border-radius:18px;background:#fff;box-shadow:var(--sh1);overflow:hidden}
+.more > button{width:100%;display:flex;justify-content:space-between;align-items:center;padding:14px 16px;font-weight:700;font-size:15px}
+.more > button svg{transition:transform .25s}
+.more.open > button svg{transform:rotate(180deg)}
+.more .mv{display:none;padding:0 14px 14px;gap:8px}
+.more.open .mv{display:grid;animation:vin .3s}
+.xb{border-radius:14px;padding:11px 13px;font-size:14px;line-height:1.5}
+.xb b{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px}
+.xb.n{background:#FFF5E5}.xb.n b{color:#9A5B00}
+.xb.d{background:#EAF2FB}.xb.d b{color:#0A66C2}
+.xb.o{background:var(--gl)}.xb.o b{color:var(--g)}
+.xb.m{background:#F1F1F4}.xb.m b{color:var(--ink2)}
+.flipwrap{perspective:1600px}
+.flipper{transition:transform .5s cubic-bezier(.3,.7,.2,1)}
+.rates{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.rate{position:relative;overflow:hidden;border-radius:18px;min-height:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:15px;transition:transform .15s}
+.rate:active{transform:scale(.94)}
+.rate small{font-size:11.5px;font-weight:600;opacity:.8}
+.r1{background:#FDE8EA;color:#B5121F}.r2{background:#FFF1DC;color:#9A5B00}.r3{background:#E4F5EC;color:#14713F}.r4{background:#EAF2FB;color:#0A66C2}
+.dock-q{text-align:center;font-size:12.5px;color:var(--gray);font-weight:700}
+.prog{height:5px;border-radius:5px;background:#E3E3E8;overflow:hidden;margin:2px 0 14px}
+.prog i{display:block;height:100%;background:var(--red);transition:width .4s}
+.ready{text-align:center;padding-top:6px}
+.ready .rbadge{width:96px;height:96px;margin:6px auto 14px;border-radius:30px;display:grid;place-items:center;color:#fff;background:linear-gradient(160deg,var(--g),var(--gd));box-shadow:0 18px 36px rgba(0,0,0,.18)}
+.ready .rbadge svg{width:46px;height:46px}
+.ready ol{text-align:left;background:#fff;border-radius:22px;padding:16px 16px 16px 40px;box-shadow:var(--sh1);margin:16px 0 0;font-size:15.5px;line-height:1.55}
+.ready ol li{margin:4px 0}
+.summary-pill{display:inline-flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:4px}
+.timer{display:flex;align-items:center;gap:12px;background:#fff;border-radius:22px;padding:10px 12px 10px 10px;box-shadow:var(--sh1);margin-bottom:12px}
+.ring{position:relative;width:56px;height:56px;flex:none}
+.ring svg{width:56px;height:56px;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:6}
+.ring .bg{stroke:#EFEFF2}.ring .fg{stroke:var(--red);stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:14px;font-variant-numeric:tabular-nums}
+.timer .tt{flex:1;min-width:0}.timer .tt b{font-size:14.5px;display:block}.timer .tt small{color:var(--gray);font-size:12.5px}
+.timer .tb{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--bg)}
+.timer .tb svg{width:18px;height:18px}
+.timer.warn .fg{stroke:var(--mid)}.timer.over .fg{stroke:var(--no)}.timer.over b{color:var(--no)}
+.rolebar{display:flex;margin-bottom:10px}
+.rolebar .rb{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;padding:6px 12px 6px 6px;border-radius:999px;background:#fff;box-shadow:var(--sh1)}
+.rolebar .rb i{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:#fff;background:#1F3A68;font-style:normal}
+.rolebar .rb.uv i{background:var(--red)}
+.rolebar .rb i svg{width:15px;height:15px}
+/* tri-state – distinct colours */
+.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.tri button{position:relative;overflow:hidden;min-height:48px;border-radius:14px;font-size:12.5px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:5px;line-height:1.15;padding:4px 6px;text-align:center;transition:all .2s;border:2px solid transparent}
+.tri button svg{width:16px;height:16px;flex:none}
+.tri button:active{transform:scale(.95)}
+.tri .t2{background:var(--ok-l);color:#14713F;border-color:#BFE6CF}
+.tri .t1{background:var(--mid-l);color:#9A5B00;border-color:#F6D8A8}
+.tri .t0{background:var(--no-l);color:var(--no);border-color:#F6C3CA}
+.tri .t2.on{background:var(--ok);color:#fff;border-color:var(--ok);box-shadow:0 6px 14px rgba(30,158,90,.32)}
+.tri .t1.on{background:var(--mid);color:#fff;border-color:var(--mid);box-shadow:0 6px 14px rgba(229,138,0,.32)}
+.tri .t0.on{background:var(--no);color:#fff;border-color:var(--no);box-shadow:0 6px 14px rgba(200,16,46,.32)}
+.tri.has button:not(.on){opacity:.55}
+.st.marked .n{animation:popn .4s}
+@keyframes popn{50%{transform:scale(1.25)}}
+.ql-hint{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:14px;font-size:14px;color:var(--gray);font-weight:600}
+.sumcard{background:#fff;border-radius:26px;box-shadow:var(--sh1);overflow:hidden}
+.sum-head{padding:18px;color:#fff;background:linear-gradient(160deg,var(--g),var(--gd));position:relative;overflow:hidden}
+.sum-head:after{content:"";position:absolute;right:-50px;top:-50px;width:160px;height:160px;border-radius:50%;border:2px solid rgba(255,255,255,.2)}
+.sum-head small{font-size:11.5px;font-weight:800;letter-spacing:.14em;opacity:.85}
+.sum-head .sq{font-size:19px;font-weight:800;line-height:1.3;margin-top:6px}
+.score{display:flex;align-items:center;gap:16px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.score .sc{font-size:44px;font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--ink)}
+.score .sc small{font-size:18px;color:var(--gray)}
+.score .lv{font-weight:800;font-size:16px}
+.score .lv span{display:block;font-size:13px;color:var(--gray);font-weight:600}
+table.tb{width:100%;border-collapse:collapse;font-size:14.5px}
+table.tb td{padding:12px 18px;border-bottom:1px solid #F0F0F3}
+table.tb td:first-child{font-weight:700}
+table.tb td:first-child i{font-style:normal;display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--g);color:#fff;font-size:12px;margin-right:8px}
+table.tb td:last-child{text-align:right}
+.chip{display:inline-block;font-size:12.5px;font-weight:800;padding:5px 10px;border-radius:999px;white-space:nowrap}
+.c2{background:var(--ok-l);color:#14713F}.c1{background:var(--mid-l);color:#9A5B00}.c0{background:var(--no-l);color:var(--no)}
+.fbk{padding:14px 18px;font-size:14.5px;display:grid;gap:8px}
+.fbk div b{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gray)}
+.fbk p{margin:0;white-space:pre-line}
+.preview img{display:block;width:100%;height:auto;border-radius:14px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:13.5px;font-weight:700;color:var(--ink2);margin:0 4px 7px}
+.input{width:100%;min-height:52px;border-radius:16px;border:1px solid var(--line);background:#fff;padding:13px 15px;font-size:16px;outline:none;transition:border .2s,box-shadow .2s;resize:vertical}
+.input:focus{border-color:var(--red);box-shadow:0 0 0 4px rgba(237,27,46,.12)}
+textarea.input{min-height:150px;line-height:1.5}
+.sugg{display:flex;gap:6px;flex-wrap:wrap;margin:-4px 2px 10px}
+.sugg button{position:relative;overflow:hidden;font-size:12.5px;font-weight:700;padding:7px 11px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 1px var(--line);color:var(--ink2)}
+.sugg button:active{transform:scale(.95)}
+.center{text-align:center}
+.big-ok{width:96px;height:96px;border-radius:30px;margin:10px auto 16px;display:grid;place-items:center;background:linear-gradient(160deg,#ED1B2E,#B5121F);color:#fff;box-shadow:0 18px 36px rgba(237,27,46,.3);animation:pop .6s cubic-bezier(.2,1.4,.4,1)}
+.big-ok svg{width:46px;height:46px}
+@keyframes pop{from{transform:scale(.3);opacity:0}to{transform:none;opacity:1}}
+.toast{position:fixed;left:50%;bottom:calc(120px + var(--sb));transform:translate(-50%,20px);background:#9E0A16;color:#fff;padding:12px 18px;border-radius:999px;font-size:14px;font-weight:600;opacity:0;transition:all .3s;z-index:100;pointer-events:none;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.linkbtn{font-size:14px;font-weight:700;color:var(--gray);padding:10px;text-decoration:underline;text-underline-offset:3px}
+@media (max-width:370px){.fc-mid .num{font-size:58px}.fc-ic{width:80px;height:80px}.fc-ic>span{width:56px;height:56px}.tri button{font-size:11.5px}.rate{font-size:13.5px}}
+@media (max-height:720px){.logo{width:clamp(110px,30vw,150px);border-radius:34px}.gtitle{margin:18px 0 16px}.gtitle h1{font-size:clamp(28px,8vw,40px)}.modes{margin-top:18px}.mode-w{min-height:140px}}
+@media (max-height:500px) and (orientation:landscape){.home{padding-top:8px}.logo{width:84px;border-radius:24px;box-shadow:0 0 0 4px rgba(255,255,255,.95),0 12px 30px rgba(90,0,8,.4)}.gtitle{margin:10px 0 10px}.gtitle .tag{display:none}.gtitle h1{font-size:26px}.gtitle h1 br{display:none}.modes{margin-top:12px}.mode-w{min-height:0;flex-direction:row;align-items:center;padding:12px 56px 12px 12px}.mode-w b{margin-top:0;font-size:22px}.mode-w b br{display:none}.mode-w .ar2{top:50%;transform:translateY(-50%)}.modes{width:100%;max-width:620px;margin-left:auto;margin-right:auto}.mode-w .mi{width:48px;height:48px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="bar-in" id="bar"></div></header>
+<main id="app"></main>
+<div class="toast" id="toast"></div>
+<script>
+const GAME_ICON = "data:image/jpeg;base64,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DpQetAhaSjNFAwpaSigLBRRmigAopKUUAFJSmkxQIWiiigYUtJS0AJRRRQAUUUUAFLSUtACUZopKBC9aKBS0DCkoooAMUlLRQAUUUYoAQ0tFFAgxRRmigYYoopKAFpKKKAClpKXrQAUGlpKAExRS0UAFFFFABRRRQAgpTQKKACiiigAooooASiloFABRRRQAUUmKWgQUd6KKBi0UlLQAUlFFABS0lFABRRS0AJR1oooEFFFFAwooooASilNFABRSZpaAAUUCigAo70Uh60CFooooGBooooAKXFJ0oFABRRRQAUUUGgAooooAKKKKACigUUAFFFHSgAooooADRRSUALRRRQAUYoFFACZpaKKBATR0oxQaBiUtGKKBBRiiigYh4opetJ0oAWiiigAooooAKXtSUdqAA0mKWigQlFLRQMSlopKAFpKWkoAKKKKAClpKXNABRRRQAtFApDQAGkpaKACikpaACg0UUAA6UUDpS0AFJS0lABRRRQAdKKKKACiiloASilpKAClxSUtABSUtJQAYopaSgAooooAWikpaBhSUtJQIKKXFJigAooooAKDS9aSgBM0UUtABSUtFACUuKMUUAFHSiloAbRS0UAGMUUUUAJS4zRS0AJRilpKACg0veigBKXpRRmgLn//Z";
+const GROUPS = {1:{name:"Thời gian & hoàn cảnh"},2:{name:"Niềm tin vào nghề"},3:{name:"Niềm tin vào bản thân"},4:{name:"Thu nhập & lựa chọn"}};
+const STEPS = [{name:"Đón nhận",ic:"heart"},{name:"Khám phá",ic:"search"},{name:"Giải đáp",ic:"bulb"},{name:"Chốt bước tiếp",ic:"flag"}];
+const GCOLOR = {1:{c:"#ED1B2E",d:"#B5121F",l:"#FDE8EA"},2:{c:"#1F3A68",d:"#14284A",l:"#E6ECF5"},3:{c:"#00756C",d:"#00544D",l:"#DFF2EF"},4:{c:"#B06A00",d:"#7E4C00",l:"#FBF0DF"}};
+const CARDS = [
+{id:1,g:1,q:"Tôi rất bận, không có thời gian.",s:[
+["Ghi nhận trung tính quỹ thời gian đang chặt; không khen xã giao.","Mình hiểu, quỹ thời gian của bạn đang khá chặt. Vậy mình cùng nhìn vào lịch thực tế của bạn để tìm cách sắp xếp hợp lý nhất nhé."],
+["Hỏi số giờ thực tế mỗi tuần có thể dành ra và điều đang chiếm nhiều thời gian nhất.","Mỗi tuần bạn có thể dành ra khoảng bao nhiêu giờ? Và hiện giờ việc gì đang chiếm nhiều thời gian của bạn nhất?"],
+["Đặt số giờ của ứng viên cạnh lịch hoạt động tuần mẫu đang áp dụng; nói rõ nếu chưa đủ.","Đây là lịch hoạt động mẫu một tuần của người mới. Mình thử đặt [số giờ ứng viên có] vào đây xem nhé: nếu chưa đủ, chúng ta có thể cùng xem xét lại."],
+["Tóm tắt kết quả vừa cùng sắp xếp; chốt bằng câu hỏi mở: trao đổi và hỏi ứng viên cần thêm thông tin gì.","(Sau 20 phút) Chúng ta vừa cùng xem xét và sắp xếp thời gian của bạn phù hợp với lịch hoạt động tuần. Bạn có cần thêm thông tin gì để cân nhắc không?"]],
+n:"Câu mở đầu nói chân thành, không như khen xã giao. Ở bước Giải đáp, nhắc lại đúng điều ứng viên vừa chia sẻ.",
+d:"Lịch hoạt động tuần mẫu của người mới (bản hiện hành)."
+},
+{id:2,g:1,q:"Tôi chưa sẵn sàng / để tôi suy nghĩ thêm.",s:[
+["Tôn trọng nhu cầu cần thêm thời gian; không thúc ép quyết định ngay.","Mình tôn trọng việc bạn muốn suy nghĩ thêm. Hôm nay bạn chưa cần quyết định gì đâu."],
+["Hỏi điều gì khiến ứng viên chưa sẵn sàng nhất: gia đình, hình ảnh nghề, rủi ro thu nhập hay sự tự tin.","Vậy điều gì khiến bạn thấy mình chưa sẵn sàng nhất lúc này?"],
+["Gắn đúng nguyên nhân vừa khám phá; tách “quyết định tìm hiểu” khỏi “quyết định tham gia”.","Ở bước này bạn chưa cần quyết định có tham gia hay không. Nếu điều bạn còn thiếu là [thông tin vừa nêu], mình gửi đúng tài liệu đó để bạn xem trước nhé."],
+["Chốt một bước nhỏ gắn với nguyên nhân; kết thúc bằng câu hỏi mở.","Bạn xem trước tài liệu về [điều còn thiếu], rồi [thứ Năm] mình nói chuyện thêm 15 phút nhé? Bạn còn băn khoăn điều gì nữa không?"]],
+n:"Lý do thật thường nằm sau câu “để suy nghĩ”: gia đình, hình ảnh nghề, thu nhập hoặc sự tự tin. Hỏi ra rồi mới giải đáp.",
+d:"Đúng tài liệu cho nguyên nhân ứng viên nêu (thu nhập, đào tạo, quyền lợi…)."
+},
+{id:3,g:1,m:"Bác sĩ",q:"Học 4-5 ngày lâu quá.",s:[
+["Công nhận 4-5 ngày là một khoản đầu tư thời gian đáng cân nhắc.","Mình hiểu, dành ra 4-5 ngày đi học thì cũng cần cân nhắc và sắp xếp."],
+["Làm rõ ứng viên lo về lịch học, công việc hiện tại hay chưa thấy giá trị của đào tạo.","Bạn băn khoăn nhất về lịch học, công việc hiện tại, hay chưa thấy rõ 5 ngày học sẽ được gì?"],
+["Đưa dữ kiện trước: lịch từng ngày, nội dung bắt buộc, phần thực hành, yêu cầu hoàn tất.","Đúng là bốn, năm ngày cũng là một khoản đầu tư đáng cân nhắc. Đây là lịch học từng ngày: phần bắt buộc, phần thực hành và yêu cầu để hoàn tất. Bạn xem trước phần liên quan đến điều bạn đang băn khoăn nhé."],
+["Tóm tắt nội dung 5 ngày học vừa xem; chốt bằng câu hỏi mở.","(Sau khi cùng xem lịch học) Chúng ta vừa cùng xem nội dung từng ngày trong 5 ngày học. Bạn thấy mình có sắp xếp được không, và còn cần thêm thông tin gì không?"]],
+n:"Dùng hình ảnh Bác sĩ ở bước Giải đáp. Không phóng đại lộ trình hoặc điều kiện cấp chứng nhận.",
+d:"Lịch và nội dung đào tạo chính thức (bảng một trang theo ngày). Ẩn dụ bác sĩ chỉ dùng sau dữ kiện, không thay bằng chứng."
+},
+{id:4,g:1,q:"Tôi chỉ làm bán thời gian được thôi.",s:[
+["Ghi nhận ứng viên đang cân nhắc thực tế quỹ thời gian của mình.","Bạn tính trước quỹ thời gian của mình như vậy là rất thực tế, mình đánh giá cao điều đó."],
+["Hỏi quỹ thời gian cụ thể mỗi tuần và kỳ vọng của ứng viên khi tham gia.","Mỗi tuần bạn có thể dành khoảng bao nhiêu thời gian? Và bạn mong công việc này mang lại cho mình điều gì?"],
+["Không hứa kết quả; đối chiếu lịch thực tế với yêu cầu hoạt động hiện hành.","Bán thời gian có thể hợp hoặc chưa, còn tùy quỹ giờ của bạn và yêu cầu hoạt động hiện hành. Mình cùng đặt lịch thực tế của bạn cạnh những việc cần làm nhé: nếu chưa đủ, chúng ta có thể cùng xem xét lại."],
+["Tóm tắt kết quả vừa so lịch với yêu cầu tối thiểu; chưa cần cam kết; chốt bằng câu hỏi mở.","(Sau khi cùng so lịch) Chúng ta vừa cùng so quỹ giờ của bạn với yêu cầu hoạt động tối thiểu. Bạn chưa cần cam kết gì đâu. Bạn có cần thêm thông tin gì để cân nhắc không?"]],
+n:"Không hứa “làm ít vẫn thu nhập cao”. Chỉ giải thích theo quy định hiện hành về thời gian và yêu cầu hoạt động.",
+d:"Yêu cầu hoạt động tối thiểu, khung giờ đào tạo, điều kiện duy trì."
+},
+{id:5,g:1,q:"Làm cả tối, cuối tuần thì còn đâu thời gian cho gia đình.",s:[
+["Ghi nhận ưu tiên dành thời gian cho gia đình.","Thời gian cho gia đình rất quan trọng, mình hoàn toàn hiểu và trân trọng điều đó."],
+["Hỏi khung giờ ứng viên muốn giữ cho gia đình và khung giờ có thể làm việc.","Có khung giờ nào bạn muốn giữ trọn cho gia đình không? Còn trong tuần, bạn có thể dành những lúc nào cho công việc?"],
+["Nói thật có lúc gặp khách ngoài giờ; xác lập trước khung giờ gia đình không thương lượng.","Lịch hẹn là do bạn chủ động, dù cũng có khách chỉ rảnh buổi tối. Nên bạn cứ chọn trước hai khung giờ dành riêng cho gia đình, rồi chúng ta cùng xem thời gian còn lại sắp xếp thế nào nhé."],
+["Cùng ứng viên đánh dấu lịch thật (không dùng lịch mẫu lý tưởng); tóm tắt kết quả, chốt bằng câu hỏi mở.","(Sau khi cùng đánh dấu lịch) Chúng ta vừa giữ trọn hai khung giờ cho gia đình và sắp xếp phần thời gian còn lại cho công việc. Bạn còn băn khoăn điều gì nữa không?"]],
+n:"Khác thẻ 01 (bận ở hiện tại): đây là lo ngại cân bằng lâu dài. Nói thật về việc đôi khi gặp khách ngoài giờ; không hứa “hoàn toàn tự do thời gian”.",
+d:"Lịch thật của ứng viên + yêu cầu hoạt động tuần."
+},
+{id:6,g:1,q:"Gia đình tôi không đồng ý.",s:[
+["Trân trọng việc ứng viên coi trọng ý kiến gia đình.","Bạn hỏi ý kiến gia đình trước khi quyết định, mình thấy điều đó rất đáng quý."],
+["Hỏi gia đình lo điều gì cụ thể: thu nhập, thời gian, hình ảnh nghề hay sự ổn định.","Theo bạn, gia đình đang lo nhất điều gì: thu nhập, thời gian dành cho nhà, hình ảnh của nghề hay sự ổn định?"],
+["Không mặc định gia đình thiếu thông tin; phân biệt thiếu thông tin với đánh giá rủi ro.","Mình hỏi thêm chút nhé: gia đình chưa có đủ thông tin, hay đã hiểu rồi nhưng thấy rủi ro chưa phù hợp? Vì mỗi trường hợp, mình sẽ cần trao đổi theo một cách khác."],
+["Gửi tài liệu để ứng viên tự trao đổi trước; chỉ mời người thân khi ứng viên chủ động đồng ý.","Mình gửi bạn tài liệu về đúng điều [gia đình đang lo] để bạn nói chuyện với gia đình trước. Nếu bạn thấy cần, mình sẽ mời [người thân] cùng nghe sau, được không?"]],
+n:"Không đặt ứng viên vào thế đối đầu với gia đình. Mục tiêu là để người thân có đủ thông tin, không phải thuyết phục bằng mọi giá.",
+d:"Tài liệu chính thức đúng mối lo của gia đình."
+},
+{id:7,g:1,q:"Tôi chỉ tính làm tạm trong lúc tìm việc khác.",s:[
+["Ghi nhận sự thẳng thắn; cân nhắc nhiều hướng khi chuyển việc là bình thường.","Cảm ơn bạn đã nói thẳng. Trong lúc chuyển việc, cân nhắc nhiều hướng là chuyện bình thường."],
+["Hỏi tiêu chí của công việc tiếp theo mà ứng viên đang tìm.","Công việc tiếp theo bạn đang tìm cần đáp ứng những gì: thu nhập, môi trường hay cơ hội phát triển?"],
+["Khuyến khích thử nghiêm túc ít nhất 90 ngày đầu; có kết quả rồi ứng viên có thể nhìn khác.","Dù sao bạn cũng sẽ bỏ thời gian và công sức vào đây, vậy mình thử làm nghiêm túc ít nhất 90 ngày đầu nhé. Khi đã có kết quả thật, biết đâu bạn lại nhìn công việc này khác đi."],
+["Gửi yêu cầu thực tế 6–12 tháng đầu; kết thúc bằng câu hỏi mở.","Mình gửi bạn kế hoạch 90 ngày đầu để bạn tham khảo nhé. Bạn có cần thêm thông tin gì để cân nhắc không?"]],
+n:"Không tuyển với tâm thế “làm tạm, bán vài hợp đồng rồi nghỉ” – tuyển dụng chất lượng cần cam kết hai phía.",
+d:"Yêu cầu thực tế 6–12 tháng đầu."
+},
+{id:8,g:2,q:"Tôi thấy nhiều thông tin không tốt trên mạng.",s:[
+["Ghi nhận mối lo; không phủ nhận hay tranh luận với thông tin ứng viên đã thấy.","Mình hiểu vì sao những thông tin đó làm bạn băn khoăn, và mình không phủ nhận điều bạn đã đọc. Bạn cân nhắc kỹ như vậy là đúng."],
+["Hỏi cụ thể thông tin nào khiến ứng viên lo nhất: sản phẩm, công ty, tư vấn viên hay ngành.","Cụ thể thông tin nào làm bạn lo nhất: về sản phẩm, về công ty, về tư vấn viên hay về ngành bảo hiểm nói chung?"],
+["Tách 3 phần: điều kiểm chứng được – trải nghiệm cá nhân – phần chưa đủ dữ kiện; không tranh luận.","Bạn gửi mình nội dung cụ thể nhé. Mình sẽ cùng bạn tách ra: đâu là điều kiểm chứng được, đâu là trải nghiệm cá nhân, đâu là chưa đủ thông tin. Chỗ nào chưa rõ, chúng ta có thể cùng tìm hiểu thêm."],
+["Cùng kiểm chứng ngay một thông tin cụ thể; ghi lại câu hỏi còn lại.","Mình chọn ra một thông tin bạn lo nhất và cùng kiểm chứng ngay bây giờ nhé? Những điểm còn lại mình ghi lại và trả lời bạn sau."]],
+n:"Ứng viên cần bằng chứng, không cần thêm lời hứa. Chỉ dùng ca chi trả, số liệu từ nguồn chính thức được phép chia sẻ.",
+d:"Nguồn chính thức liên quan đến nội dung ứng viên đưa ra."
+},
+{id:9,g:2,m:"Khối Rubik",q:"Nghề này không bền vững, thấy nhiều người vào rồi ra.",s:[
+["Không phủ nhận thực tế có người vào rồi ra; ghi nhận đây là câu hỏi cần làm rõ.","Bạn hỏi vậy là rất hợp lý. Thực tế cũng có người vào nghề rồi rời đi, nên tìm hiểu kỹ là đúng."],
+["Hỏi “bền vững” với ứng viên là gì: thu nhập, năng lực, khách hàng, môi trường hay thăng tiến.","Với bạn, một nghề “bền vững” cần có những gì: thu nhập, năng lực, khách hàng, môi trường hay cơ hội thăng tiến?"],
+["Không dùng tỷ lệ chưa xác minh; đưa 3 thứ kiểm tra được: yêu cầu công việc, lộ trình hỗ trợ, điều kiện duy trì.","Mình cho bạn xem ba điều kiểm chứng được: yêu cầu công việc, lộ trình hỗ trợ và điều kiện duy trì, để chúng ta cùng so với ý ‘bền vững’ của bạn nhé."],
+["Tóm tắt kết quả đối chiếu 3 dữ kiện với tiêu chí “bền vững” của ứng viên; chốt bằng câu hỏi mở.","(Sau khi cùng đối chiếu) Chúng ta vừa cùng so ba điều này với tiêu chí ‘bền vững’ của bạn. Bạn thấy thế nào, còn điều gì bạn muốn tìm hiểu thêm không?"]],
+n:"Có thể dùng hình ảnh Rubik ở bước Giải đáp. Không dùng các tỷ lệ “ra đi” hay “thành công” chưa được xác minh.",
+d:"Yêu cầu công việc, lộ trình hỗ trợ, điều kiện duy trì (bản hiện hành). Không dùng Rubik làm bằng chứng."
+},
+{id:10,g:2,q:"Tôi ngại bán cho người thân, bạn bè.",s:[
+["Đồng cảm: không ai muốn làm phiền hay ảnh hưởng mối quan hệ thân thiết.","Mình hiểu, không ai muốn người thân, bạn bè phải khó xử vì mình cả."],
+["Hỏi điều ứng viên ngại nhất: bị từ chối, bị hiểu lầm hay sợ mất lòng.","Điều bạn ngại nhất là bị từ chối, bị hiểu lầm, hay sợ mất lòng nhau?"],
+["Tư vấn theo nhu cầu, không ép; người thân không phải “nguồn phải khai thác” và có quyền từ chối.","Tư vấn đúng cách là giúp người ta hiểu giải pháp nào hợp với nhu cầu của họ, chứ không phải ép mua. Người thân luôn có quyền chọn, và bạn sẽ được hướng dẫn cách tiếp cận họ một cách khéo léo và tôn trọng."],
+["Cho xem cách xin phép trao đổi, tôn trọng lựa chọn của khách hàng và giữ gìn mối quan hệ.","Bạn có muốn xem thử một buổi tư vấn mẫu không? Bạn sẽ thấy cách xin phép trước khi chia sẻ, tôn trọng lựa chọn của người nghe mà vẫn giữ được tình cảm."]],
+n:"Không yêu cầu ứng viên lập danh sách người thân để “khai thác” ngay. Nhấn mạnh tư vấn dựa trên nhu cầu và sự tôn trọng.",
+d:"Quy trình tư vấn chuẩn, có bước xin phép và tôn trọng quyền từ chối."
+},
+{id:11,g:2,q:"Vào làm rồi có bị ép mua bảo hiểm không?",s:[
+["Ghi nhận lo ngại; nhiều người từng nghe chuyện này.","Mình hiểu, nhiều người cũng hỏi câu này trước khi tham gia. Bạn hỏi thẳng như vậy là rất tốt."],
+["Hỏi ứng viên nghe chuyện này từ đâu, có người quen từng gặp không.","Bạn nghe chuyện này từ đâu, hay có người quen từng gặp tình huống như vậy?"],
+["Trả lời trực tiếp bằng chính sách hiện hành đã phê duyệt; chưa có tài liệu thì nói cần xác minh.","Theo chính sách hiện hành thì [trích đúng chính sách đã phê duyệt]. Đây là tài liệu để bạn tự kiểm tra. Còn có mua bảo hiểm cho bản thân hay không là quyết định của riêng bạn."],
+["Gửi tài liệu chính sách; điểm chưa rõ thì xác minh và hẹn thời điểm trả lời.","Bạn xem trước tài liệu này nhé. Chỗ nào chưa rõ, mình sẽ hỏi lại đầu mối chính thức và trả lời bạn trước [ngày cụ thể], được không?"]],
+n:"Nhấn mạnh nguyên tắc tự nguyện và tư vấn đúng nhu cầu; không dùng doanh số cá nhân làm ví dụ.",
+d:"Chính sách chính thức liên quan (bản đã phê duyệt). Nếu chưa có tài liệu, nói “Mình cần xác minh”, không khẳng định bằng lời."
+},
+{id:12,g:2,q:"Lỡ khách hàng không được chi trả, tôi mang tiếng.",s:[
+["Ghi nhận tinh thần trách nhiệm với khách hàng.","Bạn nghĩ đến quyền lợi của khách hàng ngay từ đầu, mình rất quý điều đó."],
+["Hỏi ứng viên lo trường hợp nào: tư vấn sai, khách kê khai thiếu hay thủ tục chi trả.","Bạn lo nhất điều gì: mình tư vấn chưa đúng, khách kê khai chưa đủ, hay thủ tục chi trả phức tạp?"],
+["Tư vấn đúng không bảo đảm mọi yêu cầu được chi trả; nêu rõ vai trò của tư vấn viên.","Tư vấn đúng là nền tảng, còn việc chi trả sẽ căn cứ vào điều khoản và hồ sơ. Vai trò của bạn là giải thích đúng phạm vi bảo vệ, hướng dẫn khách kê khai trung thực và đồng hành cùng khách qua kênh hỗ trợ chính thức."],
+["Cho xem quy trình xử lý yêu cầu quyền lợi; không dùng ca thành công đơn lẻ để thuyết phục.","Mình cùng xem quy trình giải quyết quyền lợi, kể cả trường hợp hồ sơ bị từ chối, để bạn thấy rõ vai trò của mình ở đâu nhé?"]],
+n:"Không hứa “chắc chắn được chi trả”; chỉ dùng ca chi trả, số liệu từ nguồn chính thức.",
+d:"Quy trình xử lý yêu cầu quyền lợi chính thức."
+},
+{id:13,g:2,q:"Tôi từng có trải nghiệm không tốt với bảo hiểm.",s:[
+["Lắng nghe, chia sẻ cảm xúc; không bào chữa hay đổ lỗi.","Mình rất tiếc về trải nghiệm đó. Bạn thấy không vui cũng là điều hoàn toàn dễ hiểu."],
+["Hỏi cụ thể chuyện gì đã xảy ra và điều gì khiến ứng viên thất vọng nhất.","Bạn có thể chia sẻ chuyện gì đã xảy ra không? Điều gì khiến bạn thất vọng nhất?"],
+["Tóm tắt điều ứng viên thất vọng; hỏi họ muốn được làm rõ hay chỉ cần được lắng nghe.","Mình hiểu, điều làm bạn thất vọng nhất là [tóm tắt]. Bạn có muốn mình chia sẻ thêm về những điểm này không?"],
+["Hỗ trợ qua kênh chính thức nếu cần; chỉ nói về nghề khi ứng viên đã sẵn sàng.","Nếu bạn muốn, mình hỗ trợ bạn làm rõ chuyện đó qua kênh chính thức. Khi nào bạn thấy thoải mái, mình mới nói chuyện về cơ hội nghề nghiệp, được không?"]],
+n:"Nghe trọn câu chuyện trước khi nói. Không hứa kết quả giải quyết hồ sơ; chỉ hướng dẫn kênh chính thức.",
+d:"Kênh hỗ trợ khách hàng chính thức. Không biến trải nghiệm xấu thành “thế mạnh” trước khi ứng viên sẵn sàng."
+},
+{id:14,g:2,q:"Tôi từng làm bảo hiểm rồi, không hợp.",s:[
+["Ghi nhận trải nghiệm thực tế; trân trọng việc ứng viên đã từng thử sức.","Cảm ơn bạn đã chia sẻ. Bạn đã dám thử sức, và trải nghiệm đó rất đáng quý."],
+["Hỏi điều gì chưa phù hợp: đào tạo, người dẫn dắt, thời điểm hay môi trường.","Hồi đó điều gì làm bạn thấy chưa hợp: chuyện đào tạo, người dẫn dắt, thời điểm hay môi trường làm việc?"],
+["Tách nguyên nhân cũ khỏi bối cảnh hiện tại; làm rõ khác biệt tại Prudential so với trải nghiệm cũ của ứng viên.","Lần trước là ở một môi trường khác. Ở Prudential, những chuyện như [điều chưa hợp] có lộ trình đào tạo bài bản và Quản lý đồng hành trực tiếp. Mình cho bạn xem điểm khác biệt cụ thể nhé."],
+["Tóm tắt điểm khác biệt vừa cùng xem; kết thúc bằng câu hỏi mở.","(Sau khi cùng xem điểm khác biệt) Chúng ta vừa cùng xem những điểm khác biệt ở Prudential so với trải nghiệm trước đây của bạn. Bạn còn cần thêm thông tin gì không?"]],
+n:"Không chê nơi làm cũ của ứng viên. Người từng làm nghề là ứng viên có kinh nghiệm – hãy hỏi kỹ để hiểu lý do thật.",
+d:"Chương trình đào tạo và hỗ trợ hiện hành."
+},
+{id:15,g:2,m:"Bác sĩ",q:"Người ta sẽ nghĩ tôi hết việc mới đi bán bảo hiểm.",s:[
+["Ghi nhận lo ngại về hình ảnh cá nhân khi chọn nghề mới.","Mình hiểu, ai cũng quan tâm người khác nhìn mình thế nào, nhất là khi chọn một nghề mới."],
+["Hỏi ý kiến của ai quan trọng nhất và chính ứng viên nhìn nghề thế nào.","Ý kiến của ai là quan trọng nhất với bạn? Còn bản thân bạn, bạn nhìn nghề tư vấn tài chính thế nào?"],
+["Ứng viên không kiểm soát mọi cách nhìn; kiểm soát được chuẩn mực làm việc và sự phù hợp giá trị.","Mình không quyết định được người khác nghĩ gì về nghề này. Nhưng mình quyết định được cách mình làm: có chuẩn mực, minh bạch, và nghề này có hợp với giá trị của mình hay không."],
+["Mời gặp người đã chuyển nghề; khuyến khích hỏi cả điều khó và điều bất ngờ.","Mình giới thiệu bạn gặp một anh/chị từng chuyển từ văn phòng sang nhé? Bạn cứ hỏi thoải mái, cả chuyện khó, chuyện bất ngờ lẫn lý do họ ở lại với nghề."]],
+n:"Không hạ thấp nghề khác để nâng nghề mình. Có thể dùng hình ảnh Bác sĩ: uy tín đến từ sự chuẩn bị bài bản.",
+d:"Chuẩn mực nghề nghiệp, quy tắc đạo đức tư vấn."
+},
+{id:16,g:3,q:"Tôi không có nhiều mối quan hệ.",s:[
+["Công nhận lo về nguồn khách hàng là băn khoăn phổ biến khi cân nhắc nghề.","Mình hiểu, chưa có nhiều mối quan hệ thì lo lắng cũng là dễ hiểu."],
+["Khám phá mạng lưới hiện có trong công việc, học tập, gia đình và cộng đồng.","Hiện bạn hay kết nối với những nhóm nào: đồng nghiệp, bạn học, họ hàng hay cộng đồng xung quanh?"],
+["Mạng lưới ban đầu có ảnh hưởng nhưng không phải yếu tố duy nhất; có phương pháp phát triển thị trường được đào tạo.","Mối quan hệ ban đầu có giúp ích, nhưng không phải là tất cả. Mình cho bạn xem những cách phát triển khách hàng mà bạn sẽ được đào tạo, rồi bạn tự đánh giá xem có hợp không nhé."],
+["Nói rõ không liên hệ ai khi chưa đồng ý và chưa được đào tạo; sau đó mới phác bản đồ quan hệ.","Mình chỉ cùng bạn vẽ thử bản đồ mối quan hệ để biết nên bắt đầu từ đâu, chưa liên hệ ai khi bạn chưa đồng ý và chưa được đào tạo. Bạn thấy vậy được không?"]],
+n:"Không biến người quen của ứng viên thành danh sách phải “khai thác” ngay. Bản đồ mạng lưới chỉ để thấy điểm bắt đầu.",
+d:"Các phương pháp phát triển thị trường trong chương trình đào tạo."
+},
+{id:17,g:3,m:"Khối Rubik",q:"Công việc này khó, tôi sợ mình không thành công.",s:[
+["Ghi nhận thiếu tự tin là bình thường khi bước vào một lĩnh vực mới.","Chưa làm bao giờ mà thấy công việc này khó thì cũng dễ hiểu thôi."],
+["Hỏi ứng viên lo nhất phần nào: tìm khách hàng, tư vấn, kiến thức, thu nhập hay kỷ luật bản thân.","Bạn đang lo nhất phần nào: tìm khách hàng, tư vấn, kiến thức, thu nhập hay giữ kỷ luật cho bản thân?"],
+["Quy trình, người hướng dẫn giúp bớt tự mò nhưng không bảo đảm kết quả; nêu hỗ trợ cụ thể.","Có quy trình và người hướng dẫn thì bạn không phải tự mò; phần còn lại là thời gian, kỷ luật và thực hành của chính bạn. Mình cho bạn xem phần bạn lo nhất sẽ được hỗ trợ thế nào nhé."],
+["Tóm tắt hỗ trợ cho đúng phần ứng viên lo nhất, rồi mời chọn một bước trải nghiệm nhỏ.","(Sau khi cùng xem phần hỗ trợ) Chúng ta vừa xem ai sẽ hỗ trợ và hỗ trợ gì cho [phần ứng viên lo nhất]. Bạn có muốn chọn một bước nhỏ để trải nghiệm thử không?"]],
+n:"Thực hành: lắng nghe trước, trả lời sau. Dùng hình ảnh Rubik; không hứa “chắc chắn thành công”.",
+d:"Lộ trình hỗ trợ người mới (hành vi hỗ trợ cụ thể). Rubik chỉ là hình ảnh minh họa sau dữ kiện; không nói “ai cũng học được”."
+},
+{id:18,g:3,q:"Tôi không thích công việc bán hàng.",s:[
+["Tôn trọng cảm nhận; nhiều người có ấn tượng chưa tốt với kiểu bán hàng ép buộc.","Mình hiểu. Nhiều người không thích bán hàng vì từng gặp kiểu chào mời ép buộc."],
+["Hỏi điều ứng viên không thích: chào mời, bị từ chối hay cách bán hàng từng gặp.","Cụ thể bạn không thích điều gì: phải chào mời, bị từ chối, hay kiểu bán hàng bạn từng gặp?"],
+["Mô tả đầy đủ cả tư vấn lẫn hoạt động kinh doanh; không né bản chất bán hàng.","Thật ra công việc này vừa là tư vấn vừa là kinh doanh: tìm khách hàng, hẹn gặp, trình bày giải pháp, xử lý từ chối và theo dõi kết quả. Trong mấy việc này, việc nào bạn thấy ngại nhất?"],
+["Mời xem buổi tư vấn mẫu và kế hoạch hoạt động thực tế (job preview), kể cả phần khó.","Bạn xem thử một buổi tư vấn mẫu và kế hoạch hoạt động thực tế, kể cả những phần khó, rồi tự đánh giá xem có hợp không nhé?"]],
+n:"Đổi góc nhìn từ “bán hàng” sang “tư vấn – giúp đỡ”. Không phủ nhận rằng công việc có yếu tố kinh doanh.",
+d:"Kế hoạch hoạt động thực tế của người mới, buổi tư vấn mẫu."
+},
+{id:19,g:3,m:"Khối Rubik",q:"Tôi không giỏi ăn nói.",s:[
+["Ghi nhận sự khiêm tốn; nhiều người cũng lo như vậy khi bắt đầu.","Mình hiểu, rất nhiều người cũng lo như bạn khi mới bắt đầu."],
+["Hỏi ứng viên thấy khó ở tình huống nào: mở lời, câu hỏi khó hay nói trước đông người.","Bạn thấy khó nhất lúc nào: lúc mở lời, lúc gặp câu hỏi khó hay khi nói trước đông người?"],
+["Tư vấn tốt cần lắng nghe và hỏi đúng hơn là nói hay; kỹ năng này luyện được.","Tư vấn tốt không cần nói hay, mà cần biết lắng nghe và hỏi đúng. Kỹ năng này bạn sẽ được hướng dẫn và luyện tập từng bước."],
+["Cho thử hội thoại 3 phút: hỏi 2 câu, tóm tắt nhu cầu; phản hồi hành vi cụ thể.","Mình thử ngay 3 phút nhé: bạn chỉ cần hỏi mình hai câu rồi tóm tắt lại nhu cầu của mình. Xong mình góp ý cụ thể cho bạn."]],
+n:"Có thể dùng hình ảnh Rubik ở bước Giải đáp.",
+d:"Quy trình tư vấn mẫu. Không khẳng định “người ít nói thường lắng nghe tốt”."
+},
+{id:20,g:3,m:"Bác sĩ",q:"Tôi không có kiến thức về tài chính, bảo hiểm.",s:[
+["Công nhận đây là băn khoăn hợp lý khi chuyển sang lĩnh vực mới.","Bạn lo về kiến thức là hợp lý, vì công việc này liên quan trực tiếp đến quyền lợi của khách hàng."],
+["Hỏi nền tảng hiện tại và cách ứng viên từng học một điều mới.","Hiện bạn đang làm lĩnh vực gì? Bạn đã từng học một kỹ năng mới từ con số không chưa, lúc đó bạn học thế nào?"],
+["Nêu cụ thể: học chủ đề nào, kiểm tra/chứng nhận gì, khi nào được tư vấn, ai kiểm tra.","Chương trình đào tạo được thiết kế cụ thể: học những gì, thi hay lấy chứng chỉ gì, khi nào được bắt đầu tư vấn, và ai đồng hành để bảo đảm bạn tư vấn đúng."],
+["Tóm tắt chương trình vừa xem, chỉ ra kinh nghiệm hiện có dùng được ở đâu; chốt bằng câu hỏi mở.","(Sau khi cùng xem chương trình) Chúng ta vừa cùng xem chương trình học và tiêu chuẩn hoàn tất; kinh nghiệm [lĩnh vực của ứng viên] của bạn sẽ rất hữu ích ở [điểm cụ thể]. Bạn còn cần thêm thông tin gì không?"]],
+n:"Dùng hình ảnh Bác sĩ ở bước Giải đáp. Không nói “không cần kiến thức vẫn làm được”.",
+d:"Chương trình đào tạo người mới, yêu cầu kiểm tra/chứng nhận (bản hiện hành)."
+},
+{id:21,g:3,q:"Tôi sợ bị từ chối, bị người ta tỏ thái độ.",s:[
+["Ghi nhận cảm xúc rất thật; ai cũng ngại bị từ chối.","Ai cũng ngại bị từ chối, kể cả người làm lâu năm. Bạn nói thật được như vậy là rất đáng quý."],
+["Hỏi trải nghiệm bị từ chối khiến ứng viên ngại nhất.","Có lần bị từ chối nào làm bạn nhớ nhất không? Lúc đó điều gì làm bạn khó chịu nhất?"],
+["Khẳng định lộ trình đào tạo bài bản về kỹ năng xử lý từ chối và sự đồng hành của Quản lý.","Prudential có lộ trình đào tạo bài bản để tư vấn viên mới có đủ kiến thức và kỹ năng, nhất là kỹ năng xử lý từ chối. Mình cũng sẽ đi cùng bạn trong những lần gặp khách hàng đầu tiên."],
+["Mời trải nghiệm buổi luyện xử lý từ chối; kết thúc bằng câu hỏi mở.","Bạn thử tham gia một buổi luyện xử lý từ chối cùng mình nhé? Bạn còn băn khoăn điều gì nữa không?"]],
+n:"Không nói “rồi sẽ quen, chai mặt”; tập trung vào kỹ năng và cách nhìn. Có thể lấy chính quy trình 4 bước làm ví dụ.",
+d:"Nội dung luyện kỹ năng xin phép và xử lý từ chối."
+},
+{id:22,g:3,m:"Khối Rubik",q:"Tôi sợ vào rồi không có ai hỗ trợ.",s:[
+["Ghi nhận nhu cầu được đồng hành khi bắt đầu việc mới.","Bắt đầu một công việc mới, ai cũng mong có người đồng hành. Mình hiểu băn khoăn của bạn."],
+["Hỏi ứng viên cần hỗ trợ nhất ở đâu và đã từng thiếu sự hỗ trợ chưa.","Bạn mong được hỗ trợ nhất ở mảng nào: kiến thức, kỹ năng hay đi gặp khách hàng? Trước đây bạn đã từng bị thiếu hỗ trợ như vậy chưa?"],
+["Chỉ nêu hỗ trợ kiểm chứng được: ai, việc gì, tần suất, kênh, giới hạn.","Trong 3 tháng đầu, đây là những việc mình trực tiếp hỗ trợ bạn, bao lâu một lần, và lúc nào bạn có thể chủ động nhờ mình. Chúng ta thống nhất rõ từ đầu để bạn yên tâm nhé."],
+["Tóm tắt bản cam kết hỗ trợ 3 tháng đầu vừa cùng xem; chốt bằng câu hỏi mở.","(Sau khi cùng xem bảng cam kết) Chúng ta vừa cùng xem rõ ai hỗ trợ, hỗ trợ việc gì và qua kênh nào trong 3 tháng đầu. Bạn còn băn khoăn điều gì nữa không?"]],
+n:"Chỉ cam kết những hỗ trợ bạn thực sự làm được. Có thể dùng hình ảnh Khối Rubik.",
+d:"Bản cam kết hỗ trợ một trang (support charter). Chỉ cam kết điều Quản lý thực sự làm được."
+},
+{id:23,g:4,q:"Chính sách / cơ chế ở đây không tốt bằng nơi khác.",s:[
+["Thừa nhận chính sách là tiêu chí hợp lý khi so sánh các cơ hội.","Bạn nói đúng, chính sách và cơ chế là điều rất quan trọng khi cân nhắc một cơ hội."],
+["Làm rõ ứng viên ưu tiên gì: thu nhập, đào tạo, thương hiệu, văn hóa, hỗ trợ hay lộ trình.","Ngoài cơ chế ra, bạn còn ưu tiên điều gì: thu nhập, đào tạo, người dẫn dắt, thương hiệu, văn hóa hay lộ trình phát triển?"],
+["Chỉ dùng thông tin hiện hành đã xác minh, có nguồn; so sánh theo tiêu chí ứng viên nêu.","Mình sẽ chia sẻ thông tin hiện hành đã được xác minh, có ghi rõ nguồn và thời gian áp dụng, để bạn so sánh đúng theo những tiêu chí bạn vừa nói."],
+["Tóm tắt bảng so sánh vừa lập (cùng kỳ, cùng điều kiện, có nguồn); chốt bằng câu hỏi mở.","(Sau khi cùng lập bảng so sánh) Chúng ta vừa đặt các lựa chọn lên chung một bảng, cùng thời điểm và cùng điều kiện. Bạn còn cần thêm thông tin gì để cân nhắc không?"]],
+n:"Không chê nơi khác, không khẳng định “nơi khác không theo kịp” khi chưa có dữ liệu so sánh được duyệt.",
+d:"Chính sách hiện hành có nguồn và kỳ áp dụng. Không tự chọn tiêu chí chỉ có lợi cho mình."
+},
+{id:24,g:4,q:"Công việc / thu nhập hiện tại của tôi đang rất tốt.",s:[
+["Ghi nhận thành quả hiện tại; không khiến ứng viên phải phủ nhận những gì đang có.","Bạn đang có công việc và thu nhập tốt, đó là điều rất đáng mừng. Mình không có ý thuyết phục bạn bỏ những gì đang có."],
+["Tìm hiểu điều ứng viên muốn có thêm trong 3–5 năm: thu nhập, tự chủ, phát triển, ảnh hưởng, thời gian, lãnh đạo.","Trong 3–5 năm tới, bạn còn muốn có thêm điều gì không: thu nhập, sự tự chủ, cơ hội phát triển, thời gian hay vai trò lãnh đạo?"],
+["Không thay đổi cũng là lựa chọn hợp lý; chỉ tiếp tục nếu có khoảng trống cụ thể.","Nếu công việc hiện tại đã đáp ứng tốt những gì bạn ưu tiên, thì giữ nguyên cũng là lựa chọn hợp lý. Mình chỉ nói tiếp nếu có điều gì đó bạn còn muốn mà chưa có."],
+["Hẹn trao đổi ngắn về khoảng trống ứng viên nêu; kết thúc bằng câu hỏi mở.","Mình nói chuyện thêm một chút về [điều vừa nêu] để xem cơ hội này có thể bổ sung gì cho bạn nhé? Bạn còn băn khoăn điều gì không?"]],
+n:"Không chê công việc hay công ty hiện tại của ứng viên; không hứa “thu nhập gấp mấy lần”.",
+d:"Không bắt buộc – chỉ mở tài liệu liên quan khoảng trống ứng viên nêu."
+},
+{id:25,g:4,q:"Làm tư vấn thì không có BHXH, phúc lợi như đi làm công ty.",s:[
+["Ghi nhận sự quan tâm đến an sinh lâu dài.","Bạn nghĩ đến BHXH và phúc lợi lâu dài ngay từ đầu, như vậy là rất chín chắn."],
+["Hỏi phúc lợi nào ứng viên quan tâm nhất: hưu trí, sức khỏe, ngày nghỉ.","Trong các phúc lợi đó, bạn quan tâm nhất điều gì: lương hưu, chăm sóc sức khỏe hay ngày nghỉ?"],
+["Liệt kê đủ quyền lợi có và không có; phần không có ứng viên tự bố trí, tự chịu chi phí.","Với tư cách làm việc hiện hành, đây là những quyền lợi bạn có và những phần bạn sẽ tự sắp xếp. Mình liệt kê đủ cả hai bên để chúng ta cùng so sánh cho rõ nhé."],
+["Tóm tắt bảng Có / Không có / Tự lo / Cần xác minh, gửi bảng để ứng viên xem lại; chốt bằng câu hỏi mở.","(Sau khi cùng so sánh) Chúng ta vừa cùng so phần có, phần tự lo và phần cần xác minh. Mình gửi bạn bảng này theo chính sách mới nhất để bạn xem lại. Bạn còn cần thêm thông tin gì không?"]],
+n:"Chỉ dùng thông tin chính sách chính thức, cập nhật; không nói quá về quyền lợi.",
+d:"Chính sách quyền lợi tư vấn viên (bản cập nhật). Không biến bất lợi thành lợi thế quá nhanh."
+},
+{id:26,g:4,q:"Vào làm có phải đóng phí hay bỏ tiền ra không?",s:[
+["Ghi nhận sự cẩn trọng về tiền bạc; đây là câu hỏi chính đáng.","Bạn hỏi rõ chuyện chi phí ngay từ đầu là rất cẩn thận. Mình trả lời thẳng luôn nhé."],
+["Hỏi ứng viên đã nghe hoặc đang lo về khoản chi phí nào.","Bạn đã nghe nói đến khoản phí nào chưa, hay bạn lo phải bỏ vốn như khi kinh doanh?"],
+["Trả lời trực tiếp bằng bảng chi phí chính thức; chưa có dữ liệu thì không đoán.","Đây là bảng các khoản theo tài liệu chính thức: tên khoản, bắt buộc hay không, bao nhiêu tiền, nộp cho ai và có được hoàn lại không."],
+["Khoản chưa rõ: cùng hỏi đầu mối chính thức để xác minh trước khi ứng viên quyết định.","Khoản nào chưa rõ, mình sẽ hỏi đầu mối chính thức và trả lời bạn trước [ngày cụ thể], trước khi bạn quyết định, được không?"]],
+n:"Chỉ nói theo thông tin chính thức; không khẳng định “không mất gì” khi chưa chắc chắn.",
+d:"Bảng phí và quy trình gia nhập: tên khoản, bắt buộc/tùy chọn, số tiền, nộp cho ai, hoàn lại, thời điểm, nguồn."
+},
+{id:27,g:4,q:"Không có lương cứng, tôi không yên tâm.",s:[
+["Ghi nhận nhu cầu thu nhập ổn định là chính đáng.","Mong muốn thu nhập ổn định là hoàn toàn chính đáng, nhất là khi bạn có nhiều trách nhiệm."],
+["Xin phép trước; ứng viên có thể dùng một mức chi tối thiểu tự chọn, không cần kể từng khoản.","Giai đoạn đầu, mỗi tháng bạn cần tối thiểu bao nhiêu để yên tâm? Bạn chỉ cần ước chừng thôi, không cần kể từng khoản đâu."],
+["Giải thích cơ chế theo chính sách; nhấn mạnh điểm mạnh: thu nhập tương xứng với nỗ lực.","Điểm mạnh của công việc này là thu nhập tương xứng với nỗ lực. Với chính sách thu nhập của Prudential, bạn có thể đạt mức thu nhập mình mong muốn, nhưng bạn sẽ cần đầu tư thời gian và công sức tương xứng."],
+["Kiểm tra khả năng chuyển tiếp với mức chi ứng viên tự chọn; không thuyết phục chấp nhận rủi ro.","Nếu bạn muốn, mình cùng xem công việc này có đáp ứng được mức chi tiêu tối thiểu của bạn không nhé. Mục đích là để bạn có thêm thông tin trước khi quyết định. Bạn thấy vậy được không?"]],
+n:"Minh bạch rằng thu nhập phụ thuộc kết quả. Chỉ nêu chính sách hỗ trợ đang áp dụng, từ nguồn chính thức.",
+d:"Cơ chế thu nhập và chương trình hỗ trợ người mới (bản hiện hành). Không dùng hoàn cảnh tài chính để ép quyết định."
+},
+{id:28,g:4,q:"Tôi cần thu nhập ngay, không chờ được.",s:[
+["Thấu hiểu áp lực tài chính hiện tại; không xem nhẹ.","Mình hiểu, khi đang cần thu nhập thì ai cũng muốn có kết quả sớm."],
+["Hỏi mức độ cấp bách và mục tiêu tài chính ngắn hạn – dài hạn.","Bạn cần có thu nhập trong khoảng bao lâu nữa? Ngoài nhu cầu trước mắt, mục tiêu tài chính lâu dài của bạn là gì?"],
+["Nói thật thu nhập cần thời gian; làm song song chỉ khi quỹ thời gian và rủi ro cho phép.","Nếu bạn cần thu nhập ngay, ưu tiên một công việc có thu nhập ổn định trước là hợp lý. Cơ hội này có thể làm song song khi bạn sắp xếp được thời gian và sẵn sàng cho giai đoạn đầu."],
+["Tóm tắt 4 điểm vừa cùng kiểm tra: quỹ thời gian, việc hiện tại, yêu cầu đào tạo, giai đoạn chưa có thu nhập; chốt bằng câu hỏi mở.","(Sau khi cùng xem xét) Chúng ta vừa cùng xem quỹ thời gian, việc hiện tại, yêu cầu đào tạo và giai đoạn đầu chưa có thu nhập. Bạn còn cần thêm thông tin gì để cân nhắc không?"]],
+n:"Trung thực là cách xây niềm tin nhanh nhất. Không dùng hoàn cảnh khó khăn của ứng viên để thúc ép quyết định.",
+d:"Yêu cầu đào tạo, yêu cầu hoạt động, cơ chế thu nhập hiện hành."
+},
+{id:29,g:4,q:"Tôi sợ áp lực doanh số, chỉ tiêu.",s:[
+["Công nhận lo ngại áp lực là phổ biến với người chưa quen kinh doanh.","Mình hiểu, áp lực chỉ tiêu thường là điều nhiều người lo đầu tiên."],
+["Hỏi kinh nghiệm với chỉ tiêu và điều giúp ứng viên làm việc tốt nhất.","Bạn đã từng làm việc có chỉ tiêu chưa? Điều gì giúp bạn làm tốt nhất: mục tiêu rõ ràng, có người hỗ trợ hay tự mình chủ động?"],
+["Không gọi áp lực bằng tên khác; minh bạch yêu cầu, chu kỳ đánh giá, hỗ trợ và hệ quả khi chưa đạt.","Công việc nào cũng có mục tiêu kết quả, và ở đây cũng vậy. Đây là yêu cầu chính thức, cách theo dõi, mình hỗ trợ gì khi bạn chưa đạt, và chính sách áp dụng ra sao."],
+["Tóm tắt yêu cầu chính thức, kỳ vọng của nhóm và kế hoạch tuần mẫu; chốt bằng câu hỏi mở.","(Sau khi cùng xem) Chúng ta vừa cùng xem yêu cầu chính thức, kỳ vọng của nhóm và kế hoạch hoạt động tuần mẫu. Bạn còn băn khoăn điều gì nữa không?"]],
+n:"Không nói “không có áp lực”. Giúp ứng viên thấy áp lực được chia nhỏ và có hỗ trợ.",
+d:"Yêu cầu hoạt động/kết quả, chu kỳ đánh giá, hệ quả theo chính sách."
+},
+{id:30,g:4,q:"Thu nhập nghe hấp dẫn quá, khó tin.",s:[
+["Khen sự tỉnh táo; hoài nghi là cần thiết khi cân nhắc nghề mới.","Bạn nghĩ như vậy là rất tỉnh táo. Mình cũng muốn bạn quyết định dựa trên thông tin thật."],
+["Hỏi ứng viên nghe thông tin từ đâu và điều gì khiến khó tin.","Bạn nghe con số đó ở đâu? Điều gì khiến bạn thấy khó tin nhất?"],
+["Không lấy trường hợp cao nhất làm kỳ vọng; chỉ dùng cơ chế và dữ liệu chính thức được công bố.","Thu nhập ở đây được tính theo cơ chế rõ ràng, không lấy trường hợp cao nhất làm chuẩn. Mình chia sẻ cách tính thu nhập và những số liệu chính thức được phép công bố để bạn tự đánh giá nhé."],
+["Tóm tắt trên tài liệu: thành phần, điều kiện ghi nhận, thời điểm chi trả, chi phí tự chịu; chốt bằng câu hỏi mở.","(Sau khi cùng xem tài liệu) Chúng ta vừa cùng xem thu nhập gồm những phần nào, điều kiện ghi nhận, thời điểm chi trả và chi phí bạn tự chịu. Bạn có muốn tự tính thử, hay cần thêm thông tin gì không?"]],
+n:"Tuyệt đối không dùng con số thu nhập “điển hình” hay “cao nhất” để thu hút. Sự minh bạch giúp ứng viên tin hơn.",
+d:"Cơ chế thu nhập chính thức: thành phần, điều kiện ghi nhận, thời điểm chi trả, khoản có thể thay đổi."
+}
+];
+const METAPHORS = {
+  "Bác sĩ": "Bác sĩ phải học và thực tập đầy đủ trước khi khám cho bệnh nhân. Nghề liên quan đến tài chính và quyền lợi khách hàng cũng cần được chuẩn bị bài bản.",
+  "Khối Rubik": "Tự mò thì ít người giải được Rubik. Có công thức và người hướng dẫn thì ai cũng học được – đó là sức mạnh của hệ thống đào tạo và coaching."
+};
+const P_ = 'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
+const ICONS = {
+ clock:`<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>`,
+ hourglass:`<path d="M6 3h12M6 21h12M7 3c0 5 10 5 10 9s-10 4-10 9M17 3c0 5-10 5-10 9"/>`,
+ calendar:`<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4M8 14h2M14 14h2M8 17h2"/>`,
+ userclock:`<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.5 3.3-5.5 6.5-5.5 1.3 0 2.5.3 3.5.9"/><circle cx="17.5" cy="16.5" r="4"/><path d="M17.5 14.5v2l1.3 1"/>`,
+ moon:`<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>`,
+ home:`<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/>`,
+ route:`<circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8.5 18H15a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h6.5"/>`,
+ globe:`<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>`,
+ refresh:`<path d="M20 11a8 8 0 0 0-14.5-4.5L3 9"/><path d="M3 4v5h5"/><path d="M4 13a8 8 0 0 0 14.5 4.5L21 15"/><path d="M21 20v-5h-5"/>`,
+ users:`<circle cx="9" cy="8" r="3.5"/><circle cx="17" cy="9" r="2.8"/><path d="M2.5 20c.6-3.5 3.3-5.5 6.5-5.5s5.9 2 6.5 5.5"/><path d="M15.5 14.6c3 0 5.3 1.8 6 5.4"/>`,
+ pen:`<path d="M14 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/>`,
+ shield:`<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M12 3v18"/>`,
+ chat:`<path d="M21 12a8 8 0 0 1-11.5 7.2L4 21l1.8-5A8 8 0 1 1 21 12z"/><path d="M9 10.5h.01M12 10.5h.01M15 10.5h.01"/>`,
+ rewind:`<path d="M11 19l-9-7 9-7z"/><path d="M22 19l-9-7 9-7z"/>`,
+ eye:`<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>`,
+ network:`<circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="19" r="2.5"/><path d="M12 7.5v4M12 11.5L6.5 17M12 11.5l5.5 5.5"/>`,
+ mountain:`<path d="M3 20l6-11 4 6 3-4 5 9z"/><path d="M14 5l2-2 2 2"/>`,
+ cart:`<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h11.5l2-8H6.5"/>`,
+ mic:`<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>`,
+ book:`<path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 21.5V4.5M8 7h8M8 11h6"/>`,
+ hand:`<path d="M18 11V6a2 2 0 0 0-4 0v5M14 10V4a2 2 0 0 0-4 0v6M10 10.5V6a2 2 0 0 0-4 0v8a8 8 0 0 0 16 0v-3a2 2 0 0 0-4 0"/>`,
+ lifebuoy:`<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M5.6 5.6l3.6 3.6M14.8 14.8l3.6 3.6M18.4 5.6l-3.6 3.6M9.2 14.8l-3.6 3.6"/>`,
+ scale:`<path d="M12 3v18M7 21h10M5 7h14"/><path d="M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z"/>`,
+ briefcase:`<rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/>`,
+ umbrella:`<path d="M2 12a10 10 0 0 1 20 0z"/><path d="M12 12v7a2 2 0 0 1-4 0"/>`,
+ wallet:`<path d="M20 7H5a2 2 0 0 1 0-4h13v4"/><path d="M3 5v14a2 2 0 0 0 2 2h15V7"/><circle cx="16" cy="14" r="1.3"/>`,
+ coins:`<ellipse cx="9" cy="6" rx="6" ry="2.6"/><path d="M3 6v5c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6V6"/><path d="M9 16.2c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6v-5c0-1.4-2.7-2.6-6-2.6"/>`,
+ bolt:`<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>`,
+ chart:`<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 6-7"/>`,
+ search:`<circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/>`,
+ heart:`<path d="M12 20s-7.5-4.6-9.2-9.2C1.6 7.4 3.8 4 7.2 4c2 0 3.4 1.1 4.8 2.8C13.4 5.1 14.8 4 16.8 4c3.4 0 5.6 3.4 4.4 6.8C19.5 15.4 12 20 12 20z"/>`,
+ bulb:`<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>`,
+ flag:`<path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/>`,
+ layers:`<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/>`,
+ target:`<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>`
+};
+const CARD_ICON = {1:"clock",2:"hourglass",3:"calendar",4:"userclock",5:"moon",6:"home",7:"route",8:"globe",9:"refresh",10:"users",11:"pen",12:"shield",13:"chat",14:"rewind",15:"eye",16:"network",17:"mountain",18:"cart",19:"mic",20:"book",21:"hand",22:"lifebuoy",23:"scale",24:"briefcase",25:"umbrella",26:"wallet",27:"coins",28:"bolt",29:"chart",30:"search"};
+const icon = (k, s=24) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" ${P_}>${ICONS[k]}</svg>`;
+
+</script>
+<script>
+(function(){
+"use strict";
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const app = $("#app"), bar = $("#bar");
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad = n => String(n).padStart(2,"0");
+const byId = id => CARDS.find(c => c.id === id);
+const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const buzz = p => { try{ navigator.vibrate && navigator.vibrate(p); }catch(e){} };
+const LS = { get(k,d){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } }, set(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} } };
+function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("show"); clearTimeout(toast.h); toast.h=setTimeout(()=>t.classList.remove("show"),2300); }
+const gvars = g => `--g:${GCOLOR[g].c};--gd:${GCOLOR[g].d};--gl:${GCOLOR[g].l}`;
+function fmt(s){ let ctx=""; const m=s.match(/^\(([^)]*)\)\s*/); if(m){ctx=m[1]; s=s.slice(m[0].length);} return (ctx?`<span class="ctx">${esc(ctx)}</span><br>`:"")+"“"+esc(s).replace(/\[([^\]]+)\]/g,'<span class="ph">$1</span>')+"”"; }
+const SV = {
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
+  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>',
+  chev:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+  down:'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
+  play:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.9l10.2-6.5a1 1 0 0 0 0-1.7L9.5 4.6A1 1 0 0 0 8 5.5z"/></svg>',
+  pause:'<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  tilde:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 13c3-4 5 2 8-1s5 2 8-2"/></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  flip:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/></svg>',
+  dl:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg>',
+  share:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>',
+  next:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  swap:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l4 4-4 4M3 7h18M7 21l-4-4 4-4M21 17H3"/></svg>',
+  tap:'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5a2 2 0 0 1 4 0v6"/><path d="M13 10a2 2 0 0 1 4 0v1a2 2 0 0 1 4 0v3a7 7 0 0 1-7 7h-1a7 7 0 0 1-6-3.5L5 15a2 2 0 0 1 3.4-2L9 14"/></svg>'
+};
+const MARK = {2:{t:"Nói đúng",c:"c2",col:"#1E9E5A",bg:"#E4F5EC"},1:{t:"Có nói nhưng chưa rõ",c:"c1",col:"#B86E00",bg:"#FFF1DC"},0:{t:"Chưa nói",c:"c0",col:"#C8102E",bg:"#FDE8EA"}};
+
+document.addEventListener("pointerdown", e => {
+  const el = e.target.closest(".btn,.opt,.rate,.tri button,.ib,.more>button,.mode-w,.sugg button");
+  if (!el) return;
+  const r = el.getBoundingClientRect(), d = Math.max(r.width, r.height);
+  const s = document.createElement("span"); s.className="ripple";
+  s.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;
+  if (getComputedStyle(el).position==="static") el.style.position="relative";
+  el.style.overflow="hidden"; el.appendChild(s); setTimeout(()=>s.remove(),600); buzz(8);
+},{passive:true});
+
+/* ===== Navigation ===== */
+let stack = [];
+function go(fn, arg){ stack.push([fn,arg]); fn(arg, false); }
+function back(){ if (stack.length>1){ stack.pop(); const [fn,arg]=stack[stack.length-1]; fn(arg, true); } else reset(home); }
+function reset(fn,arg){ stack=[[fn,arg]]; fn(arg,false); }
+const themeMeta=document.querySelector('meta[name="theme-color"]');
+function setBar(title, sub="", opts={}){
+  document.body.classList.remove("redmode"); themeMeta.setAttribute("content","#F5F5F7");
+  const left = `<button class="ib" id="bkB" aria-label="Quay lại">${SV.back}</button>`;
+  const right = opts.home===false ? `<span class="spacer"></span>` : `<button class="ib" id="hmB" aria-label="Trang chủ">${SV.home}</button>`;
+  const dots = opts.dots ? `<div class="dots">${Array.from({length:opts.dots[1]},(_,i)=>`<i class="${i<opts.dots[0]-1?"done":i===opts.dots[0]-1?"on":""}"></i>`).join("")}</div>` : "";
+  bar.innerHTML = `${left}<div class="bar-t"><b>${title}</b>${sub?`<small>${sub}</small>`:""}${dots}</div>${right}`;
+  $("#bkB").onclick = opts.onBack || back;
+  const h=$("#hmB"); if (h) h.onclick = () => { if (!opts.confirmHome || confirm(opts.confirmHome)) { stopTimer(); reset(home); } };
+}
+function render(html, isBack){ undock(); app.innerHTML = `<div class="view${isBack?" back":""}">${html}</div>`; window.scrollTo(0,0); }
+function dock(html, two){ undock(); const d=document.createElement("div"); d.className="dock"; d.id="dock"; d.innerHTML=`<div class="dock-in${two?" two":""}">${html}</div>`; document.body.appendChild(d); return d; }
+function undock(){ const d=$("#dock"); if(d) d.remove(); }
+
+/* ===== Card renderers ===== */
+function frontCard(c, footRight=""){
+  return `<div class="fcard" style="${gvars(c.g)}">
+    <span class="deco1"></span><span class="deco2"></span><span class="grid"></span>
+    <div class="fc-brand">HIỂU ĐIỀU ỨNG VIÊN BĂN KHOĂN</div>
+    <div class="fc-grp"><b>NHÓM ${c.g}</b><span>${GROUPS[c.g].name}</span></div>
+    <div class="fc-mid"><div><div class="lab">TÌNH HUỐNG</div><div class="num">${pad(c.id)}</div></div><div class="fc-ic"><span>${icon(CARD_ICON[c.id],34)}</span></div></div>
+    <div class="fc-ask"><i>?</i>Ứng viên băn khoăn</div>
+    <div class="fc-quote"><p>“${esc(c.q)}”</p></div>
+    <div class="fc-foot"><span>PRUDENTIAL</span><span>${footRight}</span></div>
+  </div>`;
+}
+function backCard(c, mode){
+  return `<div class="bcard" style="${gvars(c.g)}"><div class="bcard-in">
+    <div class="bc-top"><span class="bc-tag">TÌNH HUỐNG ${pad(c.id)}</span><span class="pill">Nhóm ${c.g} · ${GROUPS[c.g].name}</span></div>
+    <div class="bc-q">“${esc(c.q)}”</div>
+    <div>${c.s.map((s,i)=>`<div class="st" data-i="${i}"><span class="n">${i+1}</span><div>
+      <h4>${STEPS[i].name}</h4>${mode==="study"?`<p class="hint">${esc(s[0])}</p>`:""}
+      <div class="scr">${fmt(s[1])}${i===1?'<span class="wait">→ Ứng viên trả lời</span>':""}</div>
+      ${mode==="uv"?`<div class="tri" data-i="${i}">
+        <button class="t2" data-v="2">${SV.check}Nói đúng</button>
+        <button class="t1" data-v="1">${SV.tilde}Có nói, chưa rõ</button>
+        <button class="t0" data-v="0">${SV.x}Chưa nói</button></div>`:""}
+    </div></div>`).join("")}</div>
+    <div class="bc-foot"><span>PRUDENTIAL</span><span>HIỂU ĐIỀU ỨNG VIÊN BĂN KHOĂN</span></div>
+  </div></div>`;
+}
+function moreBox(c, title){
+  return `<div class="more" id="more" style="${gvars(c.g)}"><button>${title}${SV.down}</button><div class="mv">
+    ${c.m?`<div class="xb m"><b>Hình ảnh liên tưởng · ${esc(c.m)}</b>${esc(METAPHORS[c.m])}</div>`:""}
+    <div class="xb n"><b>Lưu ý</b>${esc(c.n)}</div>
+    <div class="xb d"><b>Tài liệu cần mở</b>${esc(c.d)}</div>
+  </div></div>`;
+}
+const bindMore = () => { const m=$("#more"); if(m) m.querySelector("button").onclick=()=>m.classList.toggle("open"); };
+
+/* ===== HOME ===== */
+function home(_, isBack){
+  stopTimer(); undock();
+  document.body.classList.add("redmode"); themeMeta.setAttribute("content","#ED1B2E");
+  bar.innerHTML="";
+  app.innerHTML = `<div class="home">
+    <div class="home-bg"><i></i><i></i><i></i></div>
+    <div class="logo-wrap"><div class="logo"><img src="${GAME_ICON}" alt="Biểu tượng game"></div></div>
+    <div class="gtitle"><span class="tag">GAME</span><h1>Hiểu điều ứng viên<br> băn khoăn</h1></div>
+    <div class="steps-h">${STEPS.map((s,i)=>`${i?'<span class="ar">›</span>':''}<span class="s"><span class="ic">${icon(s.ic,14)}</span>${s.name}</span>`).join("")}</div>
+    <div class="modes">
+      <button class="mode-w m1" id="mStudy"><span class="mi">${icon("layers",28)}</span><b>Ôn tập<br> cá nhân</b><span class="ar2">${SV.chev}</span></button>
+      <button class="mode-w m2" id="mPair"><span class="mi">${icon("users",28)}</span><b>Đối luyện<br> theo cặp</b><span class="ar2">${SV.chev}</span></button>
+    </div>
+  </div>`;
+  window.scrollTo(0,0);
+  $("#mStudy").onclick = () => go(studyDeck);
+  $("#mPair").onclick = () => go(pairRole);
+}
+
+/* ===== SELF STUDY – linear ===== */
+const SRS_KEY="xltc_srs_v2";
+let srs = LS.get(SRS_KEY,{cards:{}});
+const saveSrs = () => LS.set(SRS_KEY, srs);
+const DAY=864e5;
+function deckStat(g){ const now=Date.now(); let due=0,nw=0; CARDS.forEach(c=>{ if(g&&c.g!==g) return; const s=srs.cards[c.id]; if(!s) nw++; else if(s.due<=now) due++; }); return {due,nw}; }
+function sched(p, r){
+  const s = p?{...p}:{r:0,i:0,e:2.5,due:0};
+  if(r===1){ s.r=0; s.i=0; s.e=Math.max(1.3,s.e-.2); s.due=Date.now()+60e3; }
+  else if(r===2){ s.i=s.r===0?1:Math.max(1,Math.round(s.i*1.2)); s.e=Math.max(1.3,s.e-.15); s.r++; s.due=Date.now()+s.i*DAY; }
+  else if(r===3){ s.i=s.r===0?1:s.r===1?3:Math.round(Math.max(1,s.i)*s.e); s.r++; s.due=Date.now()+s.i*DAY; }
+  else { s.i=s.r===0?3:s.r===1?6:Math.round(Math.max(1,s.i)*s.e*1.3); s.e+=.15; s.r++; s.due=Date.now()+s.i*DAY; }
+  return s;
+}
+const ivl = s => s.i===0?"< 10 phút":s.i<30?`${s.i} ngày`:`${Math.round(s.i/3)/10} tháng`;
+let S={g:0,n:10};
+const NS=3;
+function studyDeck(_, isBack){
+  setBar("Ôn tập cá nhân", "Chọn bộ thẻ", {dots:[1,NS]});
+  const row = g => { const st=deckStat(g); const gv = g?gvars(g):"--g:#ED1B2E;--gd:#9E0A16;--gl:#FDE8EA";
+    const n = g?CARDS.filter(c=>c.g===g).length:30;
+    return `<button class="opt grp-opt" data-g="${g}" style="${gv}"><span class="gside">${g?`<i>NHÓM</i><b>${g}</b>`:`${icon("layers",34)}<i style="margin-top:6px">TẤT CẢ</i>`}</span><span class="ot"><b>${g?GROUPS[g].name:"Cả 4 nhóm"}</b><span>${n} thẻ · ${st.nw} chưa học</span></span><span class="side-r">${st.due?`<span class="cnt-due">${st.due} cần ôn</span>`:""}<span class="chev">${SV.chev}</span></span></button>`; };
+  render(`<div class="q-head"><span class="eyebrow">Bước 1 · Bộ thẻ</span><h2>Bạn muốn ôn bộ thẻ nào?</h2></div>
+    <div class="opts">${[0,1,2,3,4].map(row).join("")}</div>
+    <div class="center" style="margin-top:16px"><button class="linkbtn" id="rst">Đặt lại tiến độ ôn tập</button></div>`, isBack);
+  $$(".grp-opt").forEach(b=>b.onclick=()=>{ S.g=+b.dataset.g; go(studyCount); });
+  $("#rst").onclick=()=>{ if(confirm("Xoá tiến độ ôn tập trên thiết bị này?")){ srs.cards={}; saveSrs(); toast("Đã đặt lại"); studyDeck(null,true); } };
+}
+function studyCount(_, isBack){
+  const total = S.g?CARDS.filter(c=>c.g===S.g).length:30;
+  setBar("Ôn tập cá nhân", S.g?`Nhóm ${S.g} · ${GROUPS[S.g].name}`:"Cả 4 nhóm", {dots:[2,NS]});
+  const opts=[[5,"Nhanh · khoảng 5 phút"],[10,"Vừa · khoảng 10 phút"],[total,"Toàn bộ bộ thẻ"]].filter((o,i,a)=>o[0]<=total && a.findIndex(x=>x[0]===o[0])===i);
+  render(`<div class="q-head"><span class="eyebrow">Bước 2 · Số thẻ</span><h2>Phiên này ôn bao nhiêu thẻ?</h2><p class="lead">Thẻ cần ôn được ưu tiên trước, sau đó đến thẻ chưa học.</p></div>
+  <div class="opts">${opts.map(([n,t])=>`<button class="opt time-opt" data-n="${n}"><span class="ot"><span class="big">${n}<small>thẻ</small></span><span>${t}</span></span><span class="chev">${SV.chev}</span></button>`).join("")}</div>`, isBack);
+  $$(".time-opt").forEach(b=>b.onclick=()=>{ S.n=+b.dataset.n; b.classList.add("sel"); setTimeout(()=>go(studyReady),150); });
+}
+function studyReady(_, isBack){
+  setBar("Ôn tập cá nhân", `${S.n} thẻ`, {dots:[3,NS]});
+  render(`<div class="ready" style="--g:#ED1B2E;--gd:#B5121F"><div class="rbadge">${icon("layers",46)}</div>
+    <span class="eyebrow">Bước 3 · Cách ôn</span><h2>Sẵn sàng?</h2>
+    <div class="summary-pill"><span class="pill">${S.g?`Nhóm ${S.g}`:"Cả 4 nhóm"}</span><span class="pill">${S.n} thẻ</span></div>
+    <ol><li>Đọc câu băn khoăn của ứng viên.</li><li><b>Nói thành tiếng</b> cách xử lý theo 4 bước.</li><li>Lật thẻ, đối chiếu lời thoại mẫu.</li><li>Tự chấm: <b style="color:#B5121F">Học lại</b> · <b style="color:#9A5B00">Khó</b> · <b style="color:#14713F">Tốt</b> · <b style="color:#0A66C2">Dễ</b>.</li></ol></div>`, isBack);
+  dock(`<button class="btn b-pri full" id="go">${SV.play} Bắt đầu ôn</button>`);
+  $("#go").onclick=startStudy;
+}
+function startStudy(){
+  const now=Date.now(), pool=CARDS.filter(c=>!S.g||c.g===S.g);
+  const due=shuffle(pool.filter(c=>srs.cards[c.id]&&srs.cards[c.id].due<=now));
+  const nw=pool.filter(c=>!srs.cards[c.id]);
+  const rest=pool.filter(c=>srs.cards[c.id]&&srs.cards[c.id].due>now).sort((a,b)=>srs.cards[a.id].due-srs.cards[b.id].due);
+  const q=due.concat(nw,rest).slice(0,S.n).map(c=>c.id);
+  Object.assign(S,{q,idx:0,done:0,total:q.length,cnt:{1:0,2:0,3:0,4:0}});
+  stack=[[home]]; go(studyCard);
+}
+function studyCard(_, isBack){
+  if(S.idx>=S.q.length){ stack.pop(); return go(studyDone); }
+  const c=byId(S.q[S.idx]);
+  setBar(`Thẻ ${S.done+1}/${S.total}`, "Nói thành tiếng, rồi lật thẻ", {onBack:()=>{ if(confirm("Kết thúc phiên ôn?")){ stack.pop(); S.done?go(studyDone):reset(home); } }, home:false});
+  render(`<div class="prog"><i style="width:${S.done/S.total*100}%"></i></div>
+    <div class="flipwrap"><div class="flipper" id="flp">${frontCard(c, `${SV.tap} Chạm để lật`)}</div></div>`, isBack);
+  $("#flp").onclick=flip;
+  dock(`<button class="btn b-pri full" id="fB">${SV.flip} Lật thẻ</button>`);
+  $("#fB").onclick=flip;
+}
+function flip(){
+  const f=$("#flp"); if(!f||f.dataset.flipped) return; f.dataset.flipped=1;
+  const c=byId(S.q[S.idx]);
+  undock();
+  f.style.transform="rotateY(90deg)";
+  setTimeout(()=>{ f.style.transition="none"; f.style.transform="rotateY(-90deg)"; f.innerHTML=backCard(c,"study")+moreBox(c,"Lưu ý & tài liệu cần mở"); bindMore(); f.offsetWidth; f.style.transition=""; f.style.transform="rotateY(0)"; window.scrollTo({top:0,behavior:"smooth"});
+    const sub=bar.querySelector("small"); if(sub) sub.textContent="Bạn nhớ ở mức nào?";
+    const p=srs.cards[c.id];
+    const d=dock(`<div class="dock-q">Bạn nhớ cách xử lý ở mức nào?</div><div class="rates">
+      <button class="rate r1" data-r="1">Học lại<small>${ivl(sched(p,1))}</small></button>
+      <button class="rate r2" data-r="2">Khó<small>${ivl(sched(p,2))}</small></button>
+      <button class="rate r3" data-r="3">Tốt<small>${ivl(sched(p,3))}</small></button>
+      <button class="rate r4" data-r="4">Dễ<small>${ivl(sched(p,4))}</small></button></div>`);
+    $$(".rate",d).forEach(b=>b.onclick=()=>rate(+b.dataset.r));
+  },250);
+}
+function rate(r){
+  const id=S.q[S.idx]; srs.cards[id]=sched(srs.cards[id],r); saveSrs(); S.cnt[r]++;
+  if(r===1){ S.q.splice(Math.min(S.q.length,S.idx+4),0,id); S.total++; }
+  S.done++; S.idx++; buzz(r===1?[20,40,20]:12);
+  stack.pop(); go(studyCard);
+}
+function studyDone(_, isBack){
+  setBar("Hoàn thành phiên ôn","",{onBack:()=>reset(home), home:false});
+  const t=S.cnt; render(`<div class="center"><div class="big-ok" style="background:var(--red)">${SV.check}</div><h2>Bạn đã ôn ${t[1]+t[2]+t[3]+t[4]} lượt thẻ</h2><p class="lead">Thẻ chấm “Học lại” hoặc “Khó” sẽ quay lại sớm hơn ở phiên sau.</p></div>
+    <div class="rates"><div class="rate r1">${t[1]}<small>Học lại</small></div><div class="rate r2">${t[2]}<small>Khó</small></div><div class="rate r3">${t[3]}<small>Tốt</small></div><div class="rate r4">${t[4]}<small>Dễ</small></div></div>`, isBack);
+  dock(`<button class="btn b-ghost" id="h">Trang chủ</button><button class="btn b-pri" id="a">${SV.flip} Ôn tiếp</button>`, true);
+  $("#h").onclick=()=>reset(home); $("#a").onclick=()=>{ stack=[[home]]; go(studyDeck); };
+}
+
+/* ===== PAIR PRACTICE ===== */
+const DONE_KEY="xltc_done_groups_v1";
+let T = {role:null, mins:LS.get("xltc_mins",2), g:null, card:null, marks:[null,null,null,null], fb:{ql:"",note:""}, lastRole:null};
+const doneGroups = () => LS.get(DONE_KEY, []);
+function markGroupDone(g){ const d=doneGroups(); if(!d.includes(g)){ d.push(g); LS.set(DONE_KEY,d); } }
+const NP = 4;
+const roleName = r => r==="ql" ? "Quản lý tư vấn viên" : "Ứng viên";
+
+function pairRole(_, isBack){
+  setBar("Đối luyện theo cặp", "Chọn vai trò", {dots:[1,NP]});
+  const sug = T.lastRole ? (T.lastRole==="ql"?"uv":"ql") : null;
+  render(`<div class="q-head"><span class="eyebrow">Bước 1 · Vai trò</span><h2>Lượt này bạn đóng vai nào?</h2><p class="lead">${sug?`Gợi ý đổi vai: lượt trước bạn là <b style="color:var(--ink)">${roleName(T.lastRole)}</b>.`:"Hai người chọn hai vai khác nhau, mỗi người dùng thiết bị của mình."}</p></div>
+  <div class="opts">
+    <button class="opt role-opt r-ql ${sug==="ql"?"sel":""}" data-r="ql"><span class="oi">${icon("briefcase",32)}</span><span class="ot"><b>Quản lý tư vấn viên</b><span>Lắng nghe lời từ chối và xử lý theo 4 bước, bằng ngôn ngữ tự nhiên của mình.</span></span><span class="tagline"><span class="pill">Màn hình: chỉ hiện tình huống</span></span></button>
+    <button class="opt role-opt r-uv ${sug==="uv"?"sel":""}" data-r="uv"><span class="oi">${icon("chat",32)}</span><span class="ot"><b>Ứng viên</b><span>Đọc câu từ chối, theo dõi kịch bản mẫu và ghi nhận từng bước của Quản lý.</span></span><span class="tagline"><span class="pill">Màn hình: kịch bản mẫu + ghi nhận</span></span></button>
+  </div>`, isBack);
+  $$(".role-opt").forEach(b=>b.onclick=()=>{ T.role=b.dataset.r; b.classList.add("sel"); setTimeout(()=>go(pairTime),160); });
+}
+function pairTime(_, isBack){
+  setBar("Đối luyện theo cặp", roleName(T.role), {dots:[2,NP]});
+  const sub={2:"Chuẩn theo hoạt động lớp",3:"Thêm thời gian khám phá",5:"Luyện sâu"};
+  render(`<div class="q-head"><span class="eyebrow">Bước 2 · Thời gian</span><h2>Mỗi lượt kéo dài bao lâu?</h2><p class="lead">Hai người chọn cùng một mốc thời gian.</p></div>
+  <div class="opts">${[2,3,5].map(m=>`<button class="opt time-opt ${T.mins===m?"sel":""}" data-m="${m}"><span class="ot"><span class="big">${m}<small>phút</small></span><span>${sub[m]}</span></span><span class="chev">${SV.chev}</span></button>`).join("")}</div>`, isBack);
+  $$(".time-opt").forEach(b=>b.onclick=()=>{ T.mins=+b.dataset.m; LS.set("xltc_mins",T.mins); b.classList.add("sel"); setTimeout(()=>go(pairGroup),160); });
+}
+function pairGroup(_, isBack){
+  setBar("Đối luyện theo cặp", `${roleName(T.role)} · ${T.mins} phút`, {dots:[3,NP]});
+  const done=doneGroups(), left=[1,2,3,4].filter(g=>!done.includes(g));
+  const prog = `<div class="done-note"><span class="gdots">${[1,2,3,4].map(g=>`<i class="${done.includes(g)?"on":""}" style="background:${GCOLOR[g].c}">${g}</i>`).join("")}</span><span>Đã luyện <b>${done.length}/4</b> nhóm</span></div>`;
+  if(!left.length){
+    render(`<div class="center"><div class="big-ok">${SV.check}</div><h2>Đã luyện đủ 4 nhóm!</h2><p class="lead">Bạn đã đối luyện tình huống thuộc cả 4 nhóm băn khoăn.</p></div>${prog}`, isBack);
+    dock(`<button class="btn b-ghost" id="h">Trang chủ</button><button class="btn b-pri" id="nr">Vòng mới</button>`, true);
+    $("#h").onclick=()=>reset(home); $("#nr").onclick=()=>{ LS.set(DONE_KEY,[]); pairGroup(null,false); };
+    return;
+  }
+  render(`<div class="q-head"><span class="eyebrow">Bước 3 · Nhóm tình huống</span><h2>Hai bạn chọn nhóm nào?</h2><p class="lead">Thống nhất cùng một nhóm. Nhóm đã luyện sẽ được ẩn ở các lượt sau.</p></div>
+  ${done.length?prog:""}
+  <div class="opts">${left.map(g=>{ const ids=CARDS.filter(c=>c.g===g).map(c=>c.id); return `<button class="opt grp-opt" data-g="${g}" style="${gvars(g)}"><span class="gside"><i>NHÓM</i><b>${g}</b></span><span class="ot"><b>${GROUPS[g].name}</b><span>${ids.length} tình huống · Thẻ ${pad(ids[0])} – ${pad(ids[ids.length-1])}</span></span><span class="side-r"><span class="chev">${SV.chev}</span></span></button>`; }).join("")}</div>
+  ${done.length?`<div class="center" style="margin-top:14px"><button class="linkbtn" id="rg">Hiện lại tất cả nhóm</button></div>`:""}`, isBack);
+  $$(".grp-opt").forEach(b=>b.onclick=()=>{ T.g=+b.dataset.g; go(pairCard); });
+  const rg=$("#rg"); if(rg) rg.onclick=()=>{ if(confirm("Hiện lại tất cả 4 nhóm?")){ LS.set(DONE_KEY,[]); pairGroup(null,true); } };
+}
+function pairCard(_, isBack){
+  setBar("Đối luyện theo cặp", `Nhóm ${T.g} · ${GROUPS[T.g].name}`, {dots:[4,NP]});
+  render(`<div class="q-head"><span class="eyebrow" style="color:${GCOLOR[T.g].c}">Bước 4 · Tình huống</span><h2>Chọn cùng một tình huống</h2><p class="lead">Hai người đọc số thẻ cho nhau để chắc chắn chọn trùng.</p></div>
+  <div class="opts">${CARDS.filter(c=>c.g===T.g).map(c=>`<button class="opt card-opt" data-id="${c.id}" style="${gvars(c.g)}"><span class="num">${pad(c.id)}</span><span class="ot"><b>“${esc(c.q)}”</b></span><span class="chev">${SV.chev}</span></button>`).join("")}</div>`, isBack);
+  $$(".card-opt").forEach(b=>b.onclick=()=>{ T.card=byId(+b.dataset.id); T.marks=[null,null,null,null]; T.fb={ql:T.fb.ql||"",note:""}; go(pairReady); });
+}
+function pairReady(_, isBack){
+  const c=T.card, ql=T.role==="ql";
+  setBar(`Tình huống ${pad(c.id)}`, roleName(T.role));
+  render(`<div class="ready" style="${gvars(c.g)}"><div class="rbadge">${icon(ql?"briefcase":"chat",46)}</div>
+    <span class="eyebrow" style="color:var(--g)">Bạn là ${roleName(T.role)}</span><h2>Sẵn sàng?</h2>
+    <div class="summary-pill"><span class="pill">Thẻ ${pad(c.id)}</span><span class="pill">Nhóm ${c.g}</span><span class="pill">${T.mins} phút</span></div>
+    <ol>${ql?`<li>Ứng viên đọc câu từ chối.</li><li>Bạn xử lý theo 4 bước: <b>Đón nhận → Khám phá → Giải đáp → Chốt bước tiếp</b>.</li><li>Nói bằng ngôn ngữ tự nhiên của bạn – màn hình chỉ hiện tình huống.</li><li>Hết lượt, nhận ảnh tổng kết từ Ứng viên.</li>`
+      :`<li>Đọc to câu từ chối trên thẻ.</li><li>Lắng nghe Quản lý, đối chiếu kịch bản mẫu.</li><li>Mỗi bước, chạm: <b style="color:var(--ok)">Nói đúng</b> · <b style="color:#B86E00">Có nói, chưa rõ</b> · <b style="color:var(--no)">Chưa nói</b>.</li><li>Hết lượt, tải ảnh tổng kết gửi cho Quản lý.</li>`}</ol></div>`, isBack);
+  dock(`<button class="btn b-pri full" id="st">${SV.play} Bắt đầu · ${T.mins}:00</button>`);
+  $("#st").onclick=()=>{ resetTimer(); go(ql?playQL:playUV); startTimer(); };
+}
+/* Timer */
+const TM={left:0,total:0,h:null,run:false};
+function resetTimer(){ stopTimer(); TM.total=T.mins*60; TM.left=TM.total; TM.alerted=false; }
+function stopTimer(){ clearInterval(TM.h); TM.h=null; TM.run=false; }
+function tickTimer(){ TM.left=Math.ceil((TM.end-Date.now())/1000); if(TM.left<=0 && !TM.alerted){ TM.alerted=true; buzz([200,100,200]); toast("Hết giờ! Chốt bước tiếp và kết thúc lượt."); } paintTimer(); }
+function startTimer(){ if(TM.run) return; TM.run=true; TM.end=Date.now()+TM.left*1000; TM.h=setInterval(tickTimer,250); paintTimer(); }
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden && TM.run) tickTimer(); });
+function toggleTimer(){ TM.run?stopTimer():startTimer(); paintTimer(); }
+const timerHTML = () => `<div class="timer" id="tmr"><div class="ring"><svg viewBox="0 0 56 56"><circle class="bg" cx="28" cy="28" r="24"/><circle class="fg" id="rfg" cx="28" cy="28" r="24" stroke-dasharray="150.8" stroke-dashoffset="0"/></svg><b id="ttx"></b></div><div class="tt"><b>Thời gian lượt</b><small id="tms"></small></div><button class="tb" id="tpp" aria-label="Tạm dừng"></button></div>`;
+function paintTimer(){
+  const fg=$("#rfg"); if(!fg) return;
+  fg.setAttribute("stroke-dashoffset",(150.8*Math.max(0,Math.min(1,1-TM.left/TM.total))).toFixed(1));
+  const L=Math.abs(TM.left); $("#ttx").textContent=(TM.left<0?"+":"")+`${Math.floor(L/60)}:${pad(L%60)}`;
+  const t=$("#tmr"); t.classList.toggle("warn",TM.left<=30&&TM.left>0); t.classList.toggle("over",TM.left<=0);
+  $("#tms").textContent = TM.left<=0?"Đã hết giờ":TM.run?`${T.mins} phút · đang chạy`:"Tạm dừng";
+  $("#tpp").innerHTML = TM.run?SV.pause:SV.play;
+}
+const bindTimer = () => { $("#tpp").onclick=toggleTimer; paintTimer(); };
+const rolebar = () => `<div class="rolebar"><span class="rb ${T.role}"><i>${icon(T.role==="ql"?"briefcase":"chat",15)}</i>Bạn là ${roleName(T.role)}</span></div>`;
+const endConfirm = "Thoát lượt đối luyện đang diễn ra?";
+
+function playQL(_, isBack){
+  const c=T.card;
+  setBar(`Tình huống ${pad(c.id)}`, "Quản lý tư vấn viên", {onBack:()=>{ if(confirm(endConfirm)){ stopTimer(); back(); } }, confirmHome:endConfirm});
+  render(`${rolebar()}${timerHTML()}${frontCard(c,"Xử lý theo 4 bước")}
+    <div class="ql-hint">${icon("mic",18)} Lắng nghe trước – trả lời sau</div>`, isBack);
+  bindTimer();
+  dock(`<button class="btn b-dark full" id="en">${SV.check} Kết thúc lượt</button>`);
+  $("#en").onclick=()=>{ stopTimer(); markGroupDone(c.g); stack.pop(); go(qlDone); };
+}
+function qlDone(_, isBack){
+  const c=T.card; setBar("Hoàn thành lượt", `Tình huống ${pad(c.id)}`, {onBack:()=>reset(home)});
+  render(`<div class="center"><div class="big-ok">${SV.check}</div><span class="eyebrow">Quản lý tư vấn viên</span><h2>Bạn đã hoàn thành lượt!</h2>
+    <p class="lead">Ứng viên sẽ gửi bạn <b style="color:var(--ink)">ảnh tổng kết</b>. Đối chiếu với kịch bản mẫu bên dưới.</p></div>
+    ${backCard(c,"view")}${moreBox(c,"Lưu ý & tài liệu cần mở")}`, isBack);
+  bindMore(); nextDock();
+}
+function nextDock(){
+  dock(`<button class="btn b-ghost" id="h">Kết thúc</button><button class="btn b-pri" id="nx">${SV.swap} Lượt tiếp</button>`, true);
+  $("#h").onclick=()=>reset(home);
+  $("#nx").onclick=()=>{ T.lastRole=T.role; stack=[[home]]; go(pairRole); };
+}
+function playUV(_, isBack){
+  const c=T.card;
+  setBar(`Tình huống ${pad(c.id)}`, "Ứng viên · ghi nhận", {onBack:()=>{ if(confirm(endConfirm)){ stopTimer(); back(); } }, confirmHome:endConfirm});
+  render(`${rolebar()}${timerHTML()}
+    <div class="fcard" style="${gvars(c.g)};min-height:0;padding:16px 18px 18px"><span class="deco1"></span>
+      <div class="fc-grp" style="margin-top:0"><b>TÌNH HUỐNG ${pad(c.id)}</b><span>Đọc to câu này</span></div>
+      <div class="fc-quote" style="margin-top:12px;flex:none"><p style="font-size:clamp(20px,5.4vw,26px)">“${esc(c.q)}”</p></div></div>
+    <div style="height:14px"></div>${backCard(c,"uv")}
+    ${moreBox(c,"Lưu ý & tài liệu cần mở")}`, isBack);
+  bindTimer(); bindMore();
+  $$(".tri").forEach(tr=>{ const i=+tr.dataset.i;
+    if(T.marks[i]!==null){ tr.querySelector(`[data-v="${T.marks[i]}"]`).classList.add("on"); tr.classList.add("has"); }
+    $$("button",tr).forEach(b=>b.onclick=()=>{ T.marks[i]=+b.dataset.v; $$("button",tr).forEach(x=>x.classList.toggle("on",x===b)); tr.classList.add("has"); const st=tr.closest(".st"); st.classList.remove("marked"); st.offsetWidth; st.classList.add("marked"); updUV(); }); });
+  dock(`<button class="btn b-pri full" id="en">${SV.check} Kết thúc lượt · <span id="mk">0/4</span></button>`);
+  $("#en").onclick=()=>{ const miss=T.marks.filter(m=>m===null).length; if(miss && !confirm(`Còn ${miss} bước chưa ghi nhận. Tính là “Chưa nói”?`)) return; T.marks=T.marks.map(m=>m===null?0:m); stopTimer(); markGroupDone(c.g); stack.pop(); go(uvFeedback); };
+  updUV();
+}
+function updUV(){ const n=T.marks.filter(m=>m!==null).length; const e=$("#mk"); if(e) e.textContent=`${n}/4`; }
+function uvFeedback(_, isBack){
+  setBar("Phản hồi cho Quản lý", `Tình huống ${pad(T.card.id)}`, {onBack:()=>reset(home)});
+  render(`<div class="q-head"><span class="eyebrow">Phản hồi</span><h2>Ghi lại phản hồi cho Quản lý</h2><p class="lead">Nội dung sẽ in lên ảnh tổng kết.</p></div>
+    <div class="field"><label>Tên Quản lý tư vấn viên</label><input class="input" id="fq" maxlength="40" placeholder="VD: Nguyễn Văn A" value="${esc(T.fb.ql)}"></div>
+    <div class="field"><label>Ghi chú</label>
+      <div class="sugg"><button data-p="Hành vi hiệu quả: ">+ Hành vi hiệu quả</button><button data-p="Có thể cải thiện: ">+ Có thể cải thiện</button><button data-p="Ý kiến khác: ">+ Ý kiến khác</button></div>
+      <textarea class="input" id="fn" placeholder="Gợi ý:&#10;• 1 hành vi hiệu quả&#10;• 1 hành vi có thể cải thiện&#10;• Ý kiến khác">${esc(T.fb.note)}</textarea></div>`, isBack);
+  const ta=$("#fn");
+  $$(".sugg button").forEach(b=>b.onclick=()=>{ const v=ta.value; ta.value = v + (v && !v.endsWith("\n")?"\n":"") + b.dataset.p; ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); });
+  dock(`<button class="btn b-pri full" id="nx">Xem bảng tổng kết ${SV.next}</button>`);
+  $("#nx").onclick=()=>{ T.fb={ql:$("#fq").value.trim(),note:ta.value.trim()}; go(uvSummary); };
+}
+function scoreOf(){ const s=T.marks.reduce((a,b)=>a+b,0); const lv = s===8?["Xuất sắc","Thực hiện đúng cả 4 bước"]:s>=6?["Tốt","Hoàn thiện thêm bước chưa rõ"]:s>=4?["Đang tiến bộ","Luyện lại các bước còn thiếu"]:["Cần luyện thêm","Thực hành lại ngay với cùng thẻ"]; return {s,lv}; }
+function uvSummary(_, isBack){
+  const c=T.card, {s,lv}=scoreOf();
+  setBar("Tổng kết lượt", `Tình huống ${pad(c.id)}`);
+  render(`<div class="sumcard" style="${gvars(c.g)}">
+    <div class="sum-head"><small>TỔNG KẾT ĐỐI LUYỆN · THẺ ${pad(c.id)} · NHÓM ${c.g}</small><div class="sq">“${esc(c.q)}”</div></div>
+    <div class="score"><div class="sc">${s}<small>/8</small></div><div class="lv">${lv[0]}<span>${lv[1]}</span></div></div>
+    <table class="tb">${STEPS.map((st,i)=>`<tr><td><i>${i+1}</i>${st.name}</td><td><span class="chip ${MARK[T.marks[i]].c}">${MARK[T.marks[i]].t}</span></td></tr>`).join("")}</table>
+    ${(T.fb.ql||T.fb.note)?`<div class="fbk">${T.fb.ql?`<div><b>Quản lý tư vấn viên</b>${esc(T.fb.ql)}</div>`:""}${T.fb.note?`<div><b>Ghi chú</b><p>${esc(T.fb.note)}</p></div>`:""}</div>`:""}
+  </div>
+  <div style="display:grid;gap:10px;margin-top:14px"><button class="btn b-dark full" id="dlb">${SV.dl} Tải ảnh PNG</button>${(navigator.share&&navigator.canShare)?`<button class="btn b-ghost full" id="shb">${SV.share} Chia sẻ ảnh cho Quản lý</button>`:""}</div>
+  <div class="more" id="more"><button>Xem trước ảnh tổng kết${SV.down}</button><div class="mv"><div class="preview" id="pv"><p>Đang tạo ảnh…</p></div></div></div>`, isBack);
+  bindMore();
+  makePng().then(blob=>{ T.blob=blob; T.url=URL.createObjectURL(blob); $("#pv").innerHTML=`<img src="${T.url}" alt="Ảnh tổng kết"><p class="center" style="font-size:12.5px;color:var(--gray);margin:8px 0 0">Trên điện thoại có thể nhấn giữ ảnh để lưu.</p>`; });
+  const fname=()=>`XLTC_The${pad(c.id)}_${new Date().toISOString().slice(0,10)}.png`;
+  $("#dlb").onclick=()=>{ if(!T.blob) return; const a=document.createElement("a"); a.href=T.url; a.download=fname(); document.body.appendChild(a); a.click(); a.remove(); toast("Đã tải ảnh tổng kết"); };
+  const sh=$("#shb"); if(sh) sh.onclick=async()=>{ if(!T.blob) return; const f=new File([T.blob],fname(),{type:"image/png"}); try{ if(navigator.canShare({files:[f]})) await navigator.share({files:[f],title:"Tổng kết đối luyện"}); else $("#dlb").click(); }catch(e){} };
+  nextDock();
+}
+/* PNG */
+function wrap(ctx, text, maxW){ const out=[]; String(text).split("\n").forEach(par=>{ const words=par.split(/\s+/).filter(Boolean); let line=""; words.forEach(w=>{ const t=line?line+" "+w:w; if(ctx.measureText(t).width>maxW && line){ out.push(line); line=w; } else line=t; }); out.push(line); }); return out; }
+function rr(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+function makePng(){
+  const c=T.card, G=GCOLOR[c.g], {s,lv}=scoreOf(), W=1080, P=64, F="Arial, Helvetica, sans-serif";
+  const cv=document.createElement("canvas"), ctx=cv.getContext("2d");
+  ctx.font=`bold 50px ${F}`; const qL=wrap(ctx,`“${c.q}”`,W-2*P-40);
+  ctx.font=`30px ${F}`; const nL=T.fb.note?wrap(ctx,T.fb.note,W-2*P-72):[];
+  const headH=230+qL.length*64+60, fbH=nL.length?110+nL.length*42:0;
+  const H=headH+220+4*112+fbH+170;
+  cv.width=W; cv.height=H;
+  ctx.fillStyle="#F5F5F7"; ctx.fillRect(0,0,W,H);
+  const gr=ctx.createLinearGradient(0,0,W,headH); gr.addColorStop(0,G.c); gr.addColorStop(1,G.d); ctx.fillStyle=gr; ctx.fillRect(0,0,W,headH);
+  ctx.strokeStyle="rgba(255,255,255,.18)"; ctx.lineWidth=4; ctx.beginPath(); ctx.arc(W-40,30,190,0,Math.PI*2); ctx.stroke(); ctx.beginPath(); ctx.arc(W-40,30,120,0,Math.PI*2); ctx.fillStyle="rgba(255,255,255,.07)"; ctx.fill();
+  ctx.fillStyle="#fff"; rr(ctx,P,56,560,54,27); ctx.fill();
+  ctx.fillStyle=G.c; ctx.font=`bold 24px ${F}`; ctx.textBaseline="middle"; ctx.fillText("HIỂU ĐIỀU ỨNG VIÊN BĂN KHOĂN",P+30,84);
+  ctx.fillStyle="rgba(255,255,255,.9)"; ctx.font=`bold 26px ${F}`; ctx.fillText(`TỔNG KẾT ĐỐI LUYỆN · TÌNH HUỐNG ${pad(c.id)} · NHÓM ${c.g}`,P,150);
+  ctx.fillStyle="#fff"; ctx.font=`bold 50px ${F}`; ctx.textBaseline="alphabetic";
+  qL.forEach((l,i)=>ctx.fillText(l,P+26,250+i*64)); ctx.fillRect(P,202,6,qL.length*64);
+  let y=headH-40; ctx.fillStyle="#fff"; ctx.shadowColor="rgba(0,0,0,.08)"; ctx.shadowBlur=30; rr(ctx,P,y,W-2*P,200,36); ctx.fill(); ctx.shadowBlur=0;
+  ctx.fillStyle="#1D1D1F"; ctx.font=`bold 110px ${F}`; ctx.fillText(String(s),P+50,y+142); const sw=ctx.measureText(String(s)).width;
+  ctx.fillStyle="#8A8D93"; ctx.font=`bold 46px ${F}`; ctx.fillText("/8",P+56+sw,y+142);
+  ctx.fillStyle=G.c; ctx.font=`bold 44px ${F}`; ctx.fillText(lv[0],P+300,y+92);
+  ctx.fillStyle="#6E6E73"; ctx.font=`30px ${F}`; ctx.fillText(lv[1],P+300,y+140);
+  if(T.fb.ql){ ctx.font=`26px ${F}`; ctx.fillText("Quản lý TVV: "+T.fb.ql,P+300,y+180); }
+  y+=240;
+  STEPS.forEach((st,i)=>{ const m=MARK[T.marks[i]];
+    ctx.fillStyle="#fff"; rr(ctx,P,y,W-2*P,96,28); ctx.fill();
+    ctx.fillStyle=G.c; ctx.beginPath(); ctx.arc(P+52,y+48,24,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle="#fff"; ctx.font=`bold 26px ${F}`; ctx.textAlign="center"; ctx.fillText(String(i+1),P+52,y+57); ctx.textAlign="left";
+    ctx.fillStyle="#1D1D1F"; ctx.font=`bold 34px ${F}`; ctx.fillText(st.name,P+96,y+60);
+    ctx.font=`bold 27px ${F}`; const tw=ctx.measureText(m.t).width+48; const bx=W-P-24-tw;
+    ctx.fillStyle=m.bg; rr(ctx,bx,y+24,tw,48,24); ctx.fill(); ctx.fillStyle=m.col; ctx.fillText(m.t,bx+24,y+58);
+    y+=112; });
+  if(nL.length){ y+=20; ctx.fillStyle="#fff"; rr(ctx,P,y,W-2*P,fbH-20,28); ctx.fill(); let yy=y+56;
+    ctx.fillStyle="#8A8D93"; ctx.font=`bold 22px ${F}`; ctx.fillText("GHI CHÚ",P+36,yy); yy+=44;
+    ctx.fillStyle="#1D1D1F"; ctx.font=`30px ${F}`; nL.forEach(l=>{ ctx.fillText(l,P+36,yy); yy+=42; }); }
+  y=H-110; ctx.fillStyle="#ED1B2E"; ctx.font=`bold 28px ${F}`; ctx.fillText("PRUDENTIAL",P,y+40);
+  ctx.fillStyle="#8A8D93"; ctx.font=`24px ${F}`; ctx.textAlign="right";
+  const d=new Date(); ctx.fillText(`Hiểu điều ứng viên băn khoăn · ${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} · ${T.mins} phút`,W-P,y+40); ctx.textAlign="left";
+  return new Promise(res=>cv.toBlob(b=>res(b),"image/png"));
+}
+document.addEventListener("keydown",e=>{
+  if(/INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
+  const f=$("#flp");
+  if(f&&!f.dataset.flipped&&(e.code==="Space"||e.key==="Enter")){ e.preventDefault(); flip(); }
+  else if(f&&f.dataset.flipped&&/^[1-4]$/.test(e.key)) rate(+e.key);
+});
+reset(home);
+})();
+
+</script>
+</body>
+</html>
